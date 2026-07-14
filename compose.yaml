@@ -1,0 +1,56 @@
+name: aegis
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2025-latest
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: Y
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
+    volumes:
+      - db-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  db_init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    entrypoint: /opt/mssql-tools18/bin/sqlcmd -C -S db -U sa -P "${MSSQL_SA_PASSWORD}" -Q 'IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = "$MSSQL_DB_NAME") CREATE DATABASE $MSSQL_DB_NAME;'
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db_migration:
+    image: flyway/flyway
+    command: -url="jdbc:sqlserver://db;databaseName=$MSSQL_DB_NAME;trustServerCertificate=true" -schemas=dbo -user=sa -password=${MSSQL_SA_PASSWORD} -connectRetries=60 migrate
+    volumes:
+      - ./Db/Flyway:/flyway/sql
+    depends_on:
+      db_init:
+        condition: service_completed_successfully
+  
+  api:
+    build:
+      context: .
+      dockerfile: ./Api/Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      db_migration:
+        condition: service_completed_successfully
+  
+  ui:
+    build:
+      context: ./Ui
+    ports:
+      - 3000:3000
+    depends_on:
+      db_migration:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
