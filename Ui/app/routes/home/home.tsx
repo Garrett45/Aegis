@@ -6,7 +6,6 @@ import InitiativeInputCell from "~/routes/home/initiative-table/cells/initiative
 import InitiativeDeleteCell from "~/routes/home/initiative-table/cells/initiative-delete-cell";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { initiativeCellSharedStyles } from "~/routes/home/initiative-table/cells/styles";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import InitiativeDraggableRow from "~/routes/home/initiative-table/rows/initiative-draggable-row";
@@ -29,6 +28,9 @@ export function meta({}: Route.MetaArgs) {
 
 const tableGridColStyle = "grid-cols-[50px_1fr_2fr_1fr_1fr_50px]";
 
+const normalButtonColor = "bg-sky-800";
+const buttonSharedStyle = "px-4 py-2 text-xl cursor-pointer";
+
 export default function Home() {
   const createEmptyInitiativeItem = () => ({
     id: uuidv4(),
@@ -43,6 +45,14 @@ export default function Home() {
   ]);
   const [activeId, setActiveId] = useState(initiativeItems[0].id);
   const [round, setRound] = useState(1);
+
+  const parseNumberValue = (value: string, prevValue: number | null) => {
+    if (value === "") return null;
+
+    const numberValue = parseInt(value);
+    if (isNaN(numberValue)) return prevValue;
+    else return numberValue;
+  };
 
   const changeInitiativeItemValue = (
     index: number,
@@ -106,7 +116,18 @@ export default function Home() {
     <main>
       <header className="flex flex-col items-center gap-9"></header>
       <div className={"max-w-300 mx-auto"}>
-        <h1 className={"text-2xl mt-4 mb-2"}>Round {round}</h1>
+        <div className={"mt-4 mb-2 flex items-center"}>
+          <h1 className={"text-2xl"}>Round {round}</h1>
+          <div className={"flex items-center ml-auto gap-4"}>
+            <button className={`${buttonSharedStyle} ${normalButtonColor}`}>
+              Roll All Empty
+            </button>
+            <button className={`${buttonSharedStyle} ${normalButtonColor}`}>
+              Sort
+            </button>
+          </div>
+        </div>
+
         <InitiativeTable gridColStyle={tableGridColStyle}>
           <InitiativeRow>
             <InitiativeHeadCell />
@@ -129,46 +150,55 @@ export default function Home() {
                 key={initiativeItem.id}
               >
                 <InitiativeInputCell
-                  type={"number"}
                   active={initiativeItem.id === activeId}
-                  value={initiativeItem.initiative}
+                  inputMode={"numeric"}
+                  value={initiativeItem.initiative ?? ""}
                   onChange={(e) =>
                     changeInitiativeItemValue(index, {
-                      initiative: Number(e.target.value),
+                      initiative: parseNumberValue(
+                        e.target.value,
+                        initiativeItems[index].initiative,
+                      ),
                     })
                   }
                 />
                 <InitiativeInputCell
                   active={initiativeItem.id === activeId}
-                  value={initiativeItem.name}
+                  value={initiativeItem.name ?? ""}
                   onChange={(e) =>
                     changeInitiativeItemValue(index, {
-                      name: e.target.value,
+                      name: e.target.value == "" ? null : e.target.value,
                     })
                   }
                 />
                 <InitiativeInputCell
-                  type={"number"}
                   active={initiativeItem.id === activeId}
-                  value={initiativeItem.hp}
+                  value={initiativeItem.hp ?? ""}
                   onChange={(e) =>
                     changeInitiativeItemValue(index, {
-                      hp: Number(e.target.value),
+                      hp: parseNumberValue(
+                        e.target.value,
+                        initiativeItems[index].hp,
+                      ),
                     })
                   }
                 />
                 <InitiativeInputCell
-                  type={"number"}
                   active={initiativeItem.id === activeId}
-                  value={initiativeItem.ac}
+                  value={initiativeItem.ac ?? ""}
                   onChange={(e) =>
                     changeInitiativeItemValue(index, {
-                      ac: Number(e.target.value),
+                      ac: parseNumberValue(
+                        e.target.value,
+                        initiativeItems[index].ac,
+                      ),
                     })
                   }
                 />
                 <InitiativeDeleteCell
                   onClick={() => {
+                    if (initiativeItems.length === 1) return;
+
                     setInitiativeItems((prevState) => {
                       const newState = [...prevState];
                       newState.splice(index, 1);
@@ -192,7 +222,7 @@ export default function Home() {
         >
           <button
             onClick={setPrevItemActive}
-            className={`${initiativeCellSharedStyles} bg-sky-800 cursor-pointer`}
+            className={`${buttonSharedStyle} ${normalButtonColor}`}
           >
             Prev
           </button>
@@ -203,13 +233,13 @@ export default function Home() {
                 createEmptyInitiativeItem(),
               ])
             }
-            className={`${initiativeCellSharedStyles} bg-green-700 cursor-pointer`}
+            className={`${buttonSharedStyle} bg-green-700`}
           >
             <FaPlus />
           </button>
           <button
             onClick={setNextItemActive}
-            className={`${initiativeCellSharedStyles} bg-sky-800 cursor-pointer`}
+            className={`${buttonSharedStyle} ${normalButtonColor}`}
           >
             Next
           </button>

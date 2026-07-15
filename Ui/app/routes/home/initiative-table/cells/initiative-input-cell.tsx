@@ -1,12 +1,13 @@
-import React, { type ChangeEventHandler, type HTMLInputTypeAttribute } from "react";
+import React, { type HTMLInputTypeAttribute, type InputHTMLAttributes } from "react";
 import { initiativeCellStyles } from "~/routes/home/initiative-table/cells/styles";
 
 interface InitiativeInputCellProps {
   children?: React.ReactNode;
   type?: HTMLInputTypeAttribute;
-  value: string | number | readonly string[] | null;
-  onChange: ChangeEventHandler<HTMLInputElement>;
+  value: InputHTMLAttributes<HTMLInputElement>["value"];
+  onChange: InputHTMLAttributes<HTMLInputElement>["onChange"];
   active?: boolean;
+  inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
 }
 
 export default function InitiativeInputCell(props: InitiativeInputCellProps) {
@@ -14,8 +15,9 @@ export default function InitiativeInputCell(props: InitiativeInputCellProps) {
     <input
       className={`${initiativeCellStyles(props.active)} min-w-0`}
       type={props.type}
-      value={props.value ?? ""}
+      value={props.value}
       onChange={props.onChange}
+      inputMode={props.inputMode}
     >
       {props.children}
     </input>
