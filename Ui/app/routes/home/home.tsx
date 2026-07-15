@@ -58,6 +58,18 @@ export default function Home() {
     });
   };
 
+  const rollAllEmpty = () => {
+    setInitiativeItems((prevState) =>
+      prevState.map((initiativeItem) => ({
+        ...initiativeItem,
+        initiative:
+          initiativeItem.initiative == null
+            ? Math.floor(Math.random() * 20) + 1
+            : initiativeItem.initiative,
+      })),
+    );
+  };
+
   const parseNumberValue = (value: string, prevValue: number | null) => {
     if (value === "") return null;
 
@@ -131,7 +143,10 @@ export default function Home() {
         <div className={"mt-4 mb-2 flex items-center"}>
           <h1 className={"text-2xl"}>Round {round}</h1>
           <div className={"flex items-center ml-auto gap-4"}>
-            <button className={`${buttonSharedStyle} ${normalButtonColor}`}>
+            <button
+              className={`${buttonSharedStyle} ${normalButtonColor}`}
+              onClick={rollAllEmpty}
+            >
               Roll All Empty
             </button>
             <button

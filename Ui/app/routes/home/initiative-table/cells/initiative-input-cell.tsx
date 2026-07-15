@@ -4,8 +4,8 @@ import { initiativeCellStyles } from "~/routes/home/initiative-table/cells/style
 interface InitiativeInputCellProps {
   children?: React.ReactNode;
   type?: HTMLInputTypeAttribute;
-  value: InputHTMLAttributes<HTMLInputElement>["value"];
-  onChange: InputHTMLAttributes<HTMLInputElement>["onChange"];
+  value?: InputHTMLAttributes<HTMLInputElement>["value"];
+  onChange?: InputHTMLAttributes<HTMLInputElement>["onChange"];
   active?: boolean;
   inputMode?: InputHTMLAttributes<HTMLInputElement>["inputMode"];
 }
