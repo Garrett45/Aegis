@@ -83,5 +83,3 @@ Based on this initiative tracker: [Initiative Tracker | DM Tools](https://dm.too
   * Fix that deleting the active initiative breaks the initiative tracker. If we do delete the active, it should go to the next combatant, as killing something moves you forward in the turn order
   
   * Initiative bonus should be modifiable outside of autocomplete creatures for custom creatures and players
-  
-  * 

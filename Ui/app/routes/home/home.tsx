@@ -1,15 +1,15 @@
-import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
+import type {Route} from "../../../.react-router/types/app/routes/home/+types/home";
 import Table from "~/shared/table/table";
 import Row from "~/shared/table/rows/row";
 import HeadCell from "~/shared/table/cells/head-cell";
 import InputCell from "~/shared/table/cells/input-cell";
 import DeleteCell from "~/shared/table/cells/delete-cell";
-import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { DragDropProvider } from "@dnd-kit/react";
-import { move } from "@dnd-kit/helpers";
+import {useState} from "react";
+import {FaPlus} from "react-icons/fa";
+import {DragDropProvider} from "@dnd-kit/react";
+import {move} from "@dnd-kit/helpers";
 import DraggableRow from "~/shared/table/rows/draggable-row";
-import { v4 as uuidv4 } from "uuid";
+import {v4 as uuidv4} from "uuid";
 import InitiativeInputCell from "~/routes/home/initiative-input-cell";
 
 interface InitiativeItem {
@@ -241,7 +241,7 @@ export default function Home() {
                       newState.splice(index, 1);
                       return newState;
                     });
-                    setNextItemActive();
+                    if (initiativeItem.id === activeId) setNextItemActive();
                   }}
                 />
               </DraggableRow>
