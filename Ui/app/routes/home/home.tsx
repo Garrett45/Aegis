@@ -7,7 +7,7 @@ import InitiativeDeleteCell from "~/routes/home/initiative-table/cells/initiativ
 import InitiativeDragCell from "~/routes/home/initiative-table/cells/initiative-drag-cell";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import { baseInitiativeCellStyles } from "~/routes/home/initiative-table/cells/styles";
+import { initiativeCellSharedStyles } from "~/routes/home/initiative-table/cells/styles";
 
 interface InitiativeItem {
   initiative: number | null;
@@ -35,6 +35,9 @@ export default function Home() {
     createEmptyInitiativeItem(),
   ]);
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [round, setRound] = useState(1);
+
   const changeInitiativeItemValue = (
     index: number,
     value: Partial<InitiativeItem>,
@@ -48,10 +51,29 @@ export default function Home() {
       return newState;
     });
 
+  const prevItem = () => {
+    if (activeIndex <= 0) {
+      setActiveIndex(initiativeItems.length - 1);
+      if (round > 1) setRound((prevState) => prevState - 1);
+    } else {
+      setActiveIndex((prevState) => prevState - 1);
+    }
+  };
+
+  const nextItem = () => {
+    if (activeIndex >= initiativeItems.length - 1) {
+      setActiveIndex(0);
+      setRound((prevState) => prevState + 1);
+    } else {
+      setActiveIndex((prevState) => prevState + 1);
+    }
+  };
+
   return (
     <main>
       <header className="flex flex-col items-center gap-9"></header>
       <div className={"max-w-300 mx-auto"}>
+        <h1 className={"text-2xl mt-4 mb-2"}>Round {round}</h1>
         <InitiativeTable>
           <InitiativeRow>
             <InitiativeHeadCell />
@@ -66,6 +88,7 @@ export default function Home() {
               <InitiativeDragCell />
               <InitiativeInputCell
                 type={"number"}
+                active={index === activeIndex}
                 value={initiativeItem.initiative}
                 onChange={(e) =>
                   changeInitiativeItemValue(index, {
@@ -74,6 +97,7 @@ export default function Home() {
                 }
               />
               <InitiativeInputCell
+                active={index === activeIndex}
                 value={initiativeItem.name}
                 onChange={(e) =>
                   changeInitiativeItemValue(index, {
@@ -83,6 +107,7 @@ export default function Home() {
               />
               <InitiativeInputCell
                 type={"number"}
+                active={index === activeIndex}
                 value={initiativeItem.hp}
                 onChange={(e) =>
                   changeInitiativeItemValue(index, {
@@ -92,6 +117,7 @@ export default function Home() {
               />
               <InitiativeInputCell
                 type={"number"}
+                active={index === activeIndex}
                 value={initiativeItem.ac}
                 onChange={(e) =>
                   changeInitiativeItemValue(index, {
@@ -111,7 +137,21 @@ export default function Home() {
             </InitiativeRow>
           ))}
         </InitiativeTable>
-        <div className={"my-8"}>
+      </div>
+      <footer
+        className={"absolute bottom-0 left-0 right-0 bg-purple-900 py-4 mt-8"}
+      >
+        <div
+          className={
+            "max-w-300 mx-auto flex items-stretch justify-center gap-6"
+          }
+        >
+          <button
+            onClick={prevItem}
+            className={`${initiativeCellSharedStyles} bg-sky-800 cursor-pointer`}
+          >
+            Prev
+          </button>
           <button
             onClick={() =>
               setInitiativeItems((prevState) => [
@@ -119,12 +159,18 @@ export default function Home() {
                 createEmptyInitiativeItem(),
               ])
             }
-            className={`${baseInitiativeCellStyles} cursor-pointer`}
+            className={`${initiativeCellSharedStyles} bg-green-700 cursor-pointer`}
           >
             <FaPlus />
           </button>
+          <button
+            onClick={nextItem}
+            className={`${initiativeCellSharedStyles} bg-sky-800 cursor-pointer`}
+          >
+            Next
+          </button>
         </div>
-      </div>
+      </footer>
     </main>
   );
 }

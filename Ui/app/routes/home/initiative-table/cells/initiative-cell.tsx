@@ -1,10 +1,13 @@
 import React from "react";
-import { baseInitiativeCellStyles } from "~/routes/home/initiative-table/cells/styles";
+import { initiativeCellStyles } from "~/routes/home/initiative-table/cells/styles";
 
 interface InitiativeCellProps {
   children?: React.ReactNode;
+  active?: boolean;
 }
 
 export default function InitiativeCell(props: InitiativeCellProps) {
-  return <div className={baseInitiativeCellStyles}>{props.children}</div>;
+  return (
+    <div className={initiativeCellStyles(props.active)}>{props.children}</div>
+  );
 }
