@@ -4,7 +4,7 @@ import React, {
 } from "react";
 import { cellStyles } from "~/shared/table/cells/styles";
 
-interface InputCellProps {
+export interface InputCellProps {
   children?: React.ReactNode;
   type?: HTMLInputTypeAttribute;
   value?: InputHTMLAttributes<HTMLInputElement>["value"];

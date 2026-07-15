@@ -5,11 +5,12 @@ import HeadCell from "~/shared/table/cells/head-cell";
 import InputCell from "~/shared/table/cells/input-cell";
 import DeleteCell from "~/shared/table/cells/delete-cell";
 import { useState } from "react";
-import { FaDiceD20, FaPlus } from "react-icons/fa";
+import { FaPlus } from "react-icons/fa";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
 import DraggableRow from "~/shared/table/rows/draggable-row";
 import { v4 as uuidv4 } from "uuid";
+import InitiativeInputCell from "~/routes/home/initiative-input-cell";
 
 interface InitiativeItem {
   id: string;
@@ -64,11 +65,13 @@ export default function Home() {
         ...initiativeItem,
         initiative:
           initiativeItem.initiative == null
-            ? Math.floor(Math.random() * 20) + 1
+            ? roll()
             : initiativeItem.initiative,
       })),
     );
   };
+
+  const roll = () => Math.floor(Math.random() * 20) + 1;
 
   const parseNumberValue = (value: string, prevValue: number | null) => {
     if (value === "") return null;
@@ -179,27 +182,23 @@ export default function Home() {
                 id={initiativeItem.id}
                 key={initiativeItem.id}
               >
-                <div className={"relative min-w-0"}>
-                  <InputCell
-                    active={initiativeItem.id === activeId}
-                    inputMode={"numeric"}
-                    value={initiativeItem.initiative ?? ""}
-                    onChange={(e) =>
-                      changeInitiativeItemValue(index, {
-                        initiative: parseNumberValue(
-                          e.target.value,
-                          initiativeItems[index].initiative,
-                        ),
-                      })
-                    }
-                  />
-                  <FaDiceD20
-                    className={
-                      "absolute right-2 top-1/2 -translate-y-1/2 text-xl cursor-pointer"
-                    }
-                  />
-                </div>
-
+                <InitiativeInputCell
+                  active={initiativeItem.id === activeId}
+                  value={initiativeItem.initiative ?? ""}
+                  onChange={(e) =>
+                    changeInitiativeItemValue(index, {
+                      initiative: parseNumberValue(
+                        e.target.value,
+                        initiativeItems[index].initiative,
+                      ),
+                    })
+                  }
+                  onDiceClick={(e) =>
+                    changeInitiativeItemValue(index, {
+                      initiative: roll(),
+                    })
+                  }
+                />
                 <InputCell
                   active={initiativeItem.id === activeId}
                   value={initiativeItem.name ?? ""}
