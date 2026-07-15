@@ -13,7 +13,7 @@ interface InitiativeInputCellProps {
 export default function InitiativeInputCell(props: InitiativeInputCellProps) {
   return (
     <input
-      className={`${initiativeCellStyles(props.active)} min-w-0`}
+      className={`${initiativeCellStyles(props.active)} min-w-0 w-full`}
       type={props.type}
       value={props.value}
       onChange={props.onChange}

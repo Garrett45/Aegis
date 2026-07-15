@@ -5,7 +5,7 @@ import InitiativeHeadCell from "~/routes/home/initiative-table/cells/initiative-
 import InitiativeInputCell from "~/routes/home/initiative-table/cells/initiative-input-cell";
 import InitiativeDeleteCell from "~/routes/home/initiative-table/cells/initiative-delete-cell";
 import {useState} from "react";
-import {FaPlus} from "react-icons/fa";
+import {FaDiceD20, FaPlus} from "react-icons/fa";
 import {DragDropProvider} from "@dnd-kit/react";
 import {move} from "@dnd-kit/helpers";
 import InitiativeDraggableRow from "~/routes/home/initiative-table/rows/initiative-draggable-row";
@@ -26,7 +26,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-const tableGridColStyle = "grid-cols-[50px_1fr_2fr_1fr_1fr_50px]";
+const tableGridColStyle = "grid-cols-[50px_1fr_3fr_1fr_1fr_50px]";
 
 const normalButtonColor = "bg-sky-800";
 const buttonSharedStyle = "px-4 py-2 text-xl cursor-pointer";
@@ -179,19 +179,27 @@ export default function Home() {
                 id={initiativeItem.id}
                 key={initiativeItem.id}
               >
-                <InitiativeInputCell
-                  active={initiativeItem.id === activeId}
-                  inputMode={"numeric"}
-                  value={initiativeItem.initiative ?? ""}
-                  onChange={(e) =>
-                    changeInitiativeItemValue(index, {
-                      initiative: parseNumberValue(
-                        e.target.value,
-                        initiativeItems[index].initiative,
-                      ),
-                    })
-                  }
-                />
+                <div className={"relative min-w-0"}>
+                  <InitiativeInputCell
+                    active={initiativeItem.id === activeId}
+                    inputMode={"numeric"}
+                    value={initiativeItem.initiative ?? ""}
+                    onChange={(e) =>
+                      changeInitiativeItemValue(index, {
+                        initiative: parseNumberValue(
+                          e.target.value,
+                          initiativeItems[index].initiative,
+                        ),
+                      })
+                    }
+                  />
+                  <FaDiceD20
+                    className={
+                      "absolute right-2 top-1/2 -translate-y-1/2 text-xl cursor-pointer"
+                    }
+                  />
+                </div>
+
                 <InitiativeInputCell
                   active={initiativeItem.id === activeId}
                   value={initiativeItem.name ?? ""}
