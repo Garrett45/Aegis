@@ -77,3 +77,7 @@ Based on this initiative tracker: [Initiative Tracker | DM Tools](https://dm.too
   * Better styling on tablets/phone. Main support is down to tablet, as phone is usually used for something like music, but I want styling to work on a phone at the least. Tablet support should be considered a priority though
   
   * Keep next, previous, and add button (three most important) in a bottom tray that 
+  
+  * Fix how dragging an initiative keeps it under the rest
+  
+  * Fix that deleting the active initiative breaks the initiative tracker. If we do delete the active, it should go to the next combatant, as killing something moves you forward in the turn order

@@ -1,4 +1,5 @@
 import React from "react";
+import { initiativeRowSharedStyles } from "~/routes/home/initiative-table/rows/styles";
 
 interface InitiativeRowProps {
   children?: React.ReactNode;
@@ -6,7 +7,7 @@ interface InitiativeRowProps {
 
 export default function InitiativeRow(props: InitiativeRowProps) {
   return (
-    <div className={"w-full grid col-span-full grid-cols-subgrid"}>
+    <div className={`${initiativeRowSharedStyles} grid-cols-subgrid`}>
       {props.children}
     </div>
   );
