@@ -1,5 +1,5 @@
 import React from "react";
-import { rowSharedStyles } from "~/routes/home/table/rows/styles";
+import { rowSharedStyles } from "~/shared/table/rows/styles";
 
 interface RowProps {
   children?: React.ReactNode;

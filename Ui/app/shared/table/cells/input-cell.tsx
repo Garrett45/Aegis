@@ -2,7 +2,7 @@ import React, {
   type HTMLInputTypeAttribute,
   type InputHTMLAttributes,
 } from "react";
-import { cellStyles } from "~/routes/home/table/cells/styles";
+import { cellStyles } from "~/shared/table/cells/styles";
 
 interface InputCellProps {
   children?: React.ReactNode;

@@ -1,3 +1,3 @@
-import { tableGap } from "~/routes/home/table/shared/styles";
+import { tableGap } from "~/shared/table/styles";
 
 export const rowSharedStyles = `w-full grid col-span-full ${tableGap}`;

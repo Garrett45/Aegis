@@ -1,14 +1,14 @@
 import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
-import Table from "~/routes/home/table/table";
-import Row from "~/routes/home/table/rows/row";
-import HeadCell from "~/routes/home/table/cells/head-cell";
-import InputCell from "~/routes/home/table/cells/input-cell";
-import DeleteCell from "~/routes/home/table/cells/delete-cell";
+import Table from "~/shared/table/table";
+import Row from "~/shared/table/rows/row";
+import HeadCell from "~/shared/table/cells/head-cell";
+import InputCell from "~/shared/table/cells/input-cell";
+import DeleteCell from "~/shared/table/cells/delete-cell";
 import { useState } from "react";
 import { FaDiceD20, FaPlus } from "react-icons/fa";
 import { DragDropProvider } from "@dnd-kit/react";
 import { move } from "@dnd-kit/helpers";
-import DraggableRow from "~/routes/home/table/rows/draggable-row";
+import DraggableRow from "~/shared/table/rows/draggable-row";
 import { v4 as uuidv4 } from "uuid";
 
 interface InitiativeItem {
