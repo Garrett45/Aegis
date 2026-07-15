@@ -1,15 +1,15 @@
-import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
+import type {Route} from "../../../.react-router/types/app/routes/home/+types/home";
 import InitiativeTable from "~/routes/home/initiative-table/initiative-table";
 import InitiativeRow from "~/routes/home/initiative-table/rows/initiative-row";
 import InitiativeHeadCell from "~/routes/home/initiative-table/cells/initiative-head-cell";
 import InitiativeInputCell from "~/routes/home/initiative-table/cells/initiative-input-cell";
 import InitiativeDeleteCell from "~/routes/home/initiative-table/cells/initiative-delete-cell";
-import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { DragDropProvider } from "@dnd-kit/react";
-import { move } from "@dnd-kit/helpers";
+import {useState} from "react";
+import {FaPlus} from "react-icons/fa";
+import {DragDropProvider} from "@dnd-kit/react";
+import {move} from "@dnd-kit/helpers";
 import InitiativeDraggableRow from "~/routes/home/initiative-table/rows/initiative-draggable-row";
-import { v4 as uuidv4 } from "uuid";
+import {v4 as uuidv4} from "uuid";
 
 interface InitiativeItem {
   id: string;
@@ -45,6 +45,18 @@ export default function Home() {
   ]);
   const [activeId, setActiveId] = useState(initiativeItems[0].id);
   const [round, setRound] = useState(1);
+
+  const sort = () => {
+    setInitiativeItems((prevState) => {
+      const newState = [...prevState];
+      newState.sort((a, b) => {
+        const sortValue = (b.initiative ?? 0) - (a.initiative ?? 0);
+        if (sortValue !== 0) return sortValue;
+        return (a.name ?? "").localeCompare(b.name ?? "");
+      });
+      return newState;
+    });
+  };
 
   const parseNumberValue = (value: string, prevValue: number | null) => {
     if (value === "") return null;
@@ -122,7 +134,10 @@ export default function Home() {
             <button className={`${buttonSharedStyle} ${normalButtonColor}`}>
               Roll All Empty
             </button>
-            <button className={`${buttonSharedStyle} ${normalButtonColor}`}>
+            <button
+              className={`${buttonSharedStyle} ${normalButtonColor}`}
+              onClick={sort}
+            >
               Sort
             </button>
           </div>
