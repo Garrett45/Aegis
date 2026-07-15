@@ -1,18 +1,16 @@
 import React, { useRef, useState } from "react";
-import InitiativeDragCell from "~/routes/home/initiative-table/cells/initiative-drag-cell";
+import DragCell from "~/routes/home/table/cells/drag-cell";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { initiativeRowSharedStyles } from "~/routes/home/initiative-table/rows/styles";
+import { rowSharedStyles } from "~/routes/home/table/rows/styles";
 
-interface InitiativeDraggableRowProps {
+interface DraggableRowProps {
   id: string;
   index: number;
   gridColStyle: string;
   children?: React.ReactNode;
 }
 
-export default function InitiativeDraggableRow(
-  props: InitiativeDraggableRowProps,
-) {
+export default function DraggableRow(props: DraggableRowProps) {
   const [element, setElement] = useState<Element | null>(null);
   const handleRef = useRef<HTMLDivElement | null>(null);
   const { isDragging } = useSortable({
@@ -25,9 +23,9 @@ export default function InitiativeDraggableRow(
   return (
     <div
       ref={setElement}
-      className={`${initiativeRowSharedStyles} ${props.gridColStyle}`}
+      className={`${rowSharedStyles} ${props.gridColStyle}`}
     >
-      <InitiativeDragCell ref={handleRef} />
+      <DragCell ref={handleRef} />
       {props.children}
     </div>
   );

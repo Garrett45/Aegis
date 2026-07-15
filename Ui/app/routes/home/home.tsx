@@ -1,15 +1,15 @@
-import type {Route} from "../../../.react-router/types/app/routes/home/+types/home";
-import InitiativeTable from "~/routes/home/initiative-table/initiative-table";
-import InitiativeRow from "~/routes/home/initiative-table/rows/initiative-row";
-import InitiativeHeadCell from "~/routes/home/initiative-table/cells/initiative-head-cell";
-import InitiativeInputCell from "~/routes/home/initiative-table/cells/initiative-input-cell";
-import InitiativeDeleteCell from "~/routes/home/initiative-table/cells/initiative-delete-cell";
-import {useState} from "react";
-import {FaDiceD20, FaPlus} from "react-icons/fa";
-import {DragDropProvider} from "@dnd-kit/react";
-import {move} from "@dnd-kit/helpers";
-import InitiativeDraggableRow from "~/routes/home/initiative-table/rows/initiative-draggable-row";
-import {v4 as uuidv4} from "uuid";
+import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
+import Table from "~/routes/home/table/table";
+import Row from "~/routes/home/table/rows/row";
+import HeadCell from "~/routes/home/table/cells/head-cell";
+import InputCell from "~/routes/home/table/cells/input-cell";
+import DeleteCell from "~/routes/home/table/cells/delete-cell";
+import { useState } from "react";
+import { FaDiceD20, FaPlus } from "react-icons/fa";
+import { DragDropProvider } from "@dnd-kit/react";
+import { move } from "@dnd-kit/helpers";
+import DraggableRow from "~/routes/home/table/rows/draggable-row";
+import { v4 as uuidv4 } from "uuid";
 
 interface InitiativeItem {
   id: string;
@@ -158,29 +158,29 @@ export default function Home() {
           </div>
         </div>
 
-        <InitiativeTable gridColStyle={tableGridColStyle}>
-          <InitiativeRow>
-            <InitiativeHeadCell />
-            <InitiativeHeadCell>Initiative</InitiativeHeadCell>
-            <InitiativeHeadCell>Name</InitiativeHeadCell>
-            <InitiativeHeadCell>HP</InitiativeHeadCell>
-            <InitiativeHeadCell>AC</InitiativeHeadCell>
-            <InitiativeHeadCell />
-          </InitiativeRow>
+        <Table gridColStyle={tableGridColStyle}>
+          <Row>
+            <HeadCell />
+            <HeadCell>Initiative</HeadCell>
+            <HeadCell>Name</HeadCell>
+            <HeadCell>HP</HeadCell>
+            <HeadCell>AC</HeadCell>
+            <HeadCell />
+          </Row>
           <DragDropProvider
             onDragEnd={(event) => {
               setInitiativeItems((prevState) => move(prevState, event));
             }}
           >
             {initiativeItems.map((initiativeItem, index) => (
-              <InitiativeDraggableRow
+              <DraggableRow
                 gridColStyle={tableGridColStyle}
                 index={index}
                 id={initiativeItem.id}
                 key={initiativeItem.id}
               >
                 <div className={"relative min-w-0"}>
-                  <InitiativeInputCell
+                  <InputCell
                     active={initiativeItem.id === activeId}
                     inputMode={"numeric"}
                     value={initiativeItem.initiative ?? ""}
@@ -200,7 +200,7 @@ export default function Home() {
                   />
                 </div>
 
-                <InitiativeInputCell
+                <InputCell
                   active={initiativeItem.id === activeId}
                   value={initiativeItem.name ?? ""}
                   onChange={(e) =>
@@ -209,7 +209,7 @@ export default function Home() {
                     })
                   }
                 />
-                <InitiativeInputCell
+                <InputCell
                   active={initiativeItem.id === activeId}
                   value={initiativeItem.hp ?? ""}
                   onChange={(e) =>
@@ -221,7 +221,7 @@ export default function Home() {
                     })
                   }
                 />
-                <InitiativeInputCell
+                <InputCell
                   active={initiativeItem.id === activeId}
                   value={initiativeItem.ac ?? ""}
                   onChange={(e) =>
@@ -233,7 +233,7 @@ export default function Home() {
                     })
                   }
                 />
-                <InitiativeDeleteCell
+                <DeleteCell
                   onClick={() => {
                     if (initiativeItems.length === 1) return;
 
@@ -245,10 +245,10 @@ export default function Home() {
                     setNextItemActive();
                   }}
                 />
-              </InitiativeDraggableRow>
+              </DraggableRow>
             ))}
           </DragDropProvider>
-        </InitiativeTable>
+        </Table>
       </div>
       <footer
         className={"absolute bottom-0 left-0 right-0 bg-purple-900 py-4 mt-8"}
