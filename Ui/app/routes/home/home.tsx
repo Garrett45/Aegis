@@ -57,7 +57,7 @@ export default function Home({
             <HeadCell />
           </Row>
           {initiativeLists.map((initiativeList) => (
-            <Row>
+            <Row key={initiativeList.id}>
               <LinkCell to={`/initiative-lists/${initiativeList.id}`}>
                 {initiativeList.name}
               </LinkCell>
