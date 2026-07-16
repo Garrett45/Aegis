@@ -30,6 +30,14 @@ Build UI
 
 Compose for containers of SQL Server, ASP.NET Core backend, React frontend. Basic CRUD app functionality. Add in testing for backend in the form of unit testing (show a situation where it makes sense) and integration testing (maybe using test containers)
 
+# Getting Types From DB
+
+```
+
+```
+
+
+
 # Inspiration
 
 Based on this initiative tracker: [Initiative Tracker | DM Tools](https://dm.tools/tracker)
@@ -83,3 +91,65 @@ Based on this initiative tracker: [Initiative Tracker | DM Tools](https://dm.too
   * Fix that deleting the active initiative breaks the initiative tracker. If we do delete the active, it should go to the next combatant, as killing something moves you forward in the turn order
   
   * Initiative bonus should be modifiable outside of autocomplete creatures for custom creatures and players
+
+# Technical Decisions
+
+* React
+  
+  * Pros
+    
+    * I know it, short time crunch
+    
+    * I know it could support all the things I'm trying to do
+  
+  * Trade offs
+    
+    * Greater client side power required - fine because we are assuming stronger computers for people running this (iPads, Laptops, Desktops, personal devices)
+
+* API added between FE and database
+  
+  * Pros
+    
+    * Makes resource control with auth possible
+    
+    * Allows more normal OIDC auth systems, federated logins. This will allow things like "Sign in with Google". Important for a little, throw away app like this that needs a login
+    
+    * Adds flexibility with how data from the database is presented
+    
+    * Does not require provisioning access on DB for individual frontend users
+  
+  * Trade offs
+    
+    * Greater network time when making requests (has to go to API first)
+    
+    * More development time, as we have to deal with the extra piece
+    
+    * Can't track what individual users did in DB based on login, have to make sure API does
+
+* ASP.NET Core
+  
+  * Pros    
+    
+    * I know it, short time crunch
+    
+    * I know it could support all the things I'm trying to do
+  
+  * Trade offs
+    
+    * Slightly more power required on backend to run it compared to something mroe low level
+
+* Client side evaluation
+  
+  * Pros
+    
+    * FAST. Very nice UX
+    
+    * Less power required on server side. Server just has to take things after all evaluations have happened, verify it works, and save it
+  
+  * Trade offs
+    
+    * More power required on client side
+    
+    * Complicated case to deal with when syncing to backend
+    
+    * Thorny issue with generating IDs (have to be generated on the frontend, but eventually the database should generate them to guarantee unique-ness)

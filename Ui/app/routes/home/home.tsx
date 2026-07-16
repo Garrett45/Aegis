@@ -1,23 +1,34 @@
-import type {Route} from "../../../.react-router/types/app/routes/home/+types/home";
-import Table from "~/shared/table/table";
-import Row from "~/shared/table/rows/row";
+import { move } from "@dnd-kit/helpers";
+import { DragDropProvider } from "@dnd-kit/react";
+import { useState } from "react";
+import { FaPlus } from "react-icons/fa";
+import { v4 as uuidv4 } from "uuid";
+import InitiativeInputCell from "~/routes/home/initiative-input-cell";
+import DeleteCell from "~/shared/table/cells/delete-cell";
 import HeadCell from "~/shared/table/cells/head-cell";
 import InputCell from "~/shared/table/cells/input-cell";
-import DeleteCell from "~/shared/table/cells/delete-cell";
-import {useState} from "react";
-import {FaPlus} from "react-icons/fa";
-import {DragDropProvider} from "@dnd-kit/react";
-import {move} from "@dnd-kit/helpers";
 import DraggableRow from "~/shared/table/rows/draggable-row";
-import {v4 as uuidv4} from "uuid";
-import InitiativeInputCell from "~/routes/home/initiative-input-cell";
+import Row from "~/shared/table/rows/row";
+import Table from "~/shared/table/table";
+import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
+
+interface InitiativeList {
+  accountId: number;
+  name: string;
+  round: number;
+  activeId: string;
+  initiativeItems: InitiativeItem[];
+}
 
 interface InitiativeItem {
   id: string;
   initiative: number | null;
+  initiativeBonus: number | null;
   name: string | null;
   hp: number | null;
   ac: number | null;
+  sortOrder: number;
+  isFromFrontend: boolean;
 }
 
 export function meta({}: Route.MetaArgs) {
@@ -33,19 +44,39 @@ const normalButtonColor = "bg-sky-800";
 const buttonSharedStyle = "px-4 py-2 text-xl cursor-pointer";
 
 export default function Home() {
+  const [initiativeItems, setInitiativeItems] = useState<InitiativeItem[]>([]);
+  const [activeId, setActiveId] = useState(
+    initiativeItems.length > 0 ? initiativeItems[0].id : "",
+  );
+  const [round, setRound] = useState(1);
+
   const createEmptyInitiativeItem = () => ({
     id: uuidv4(),
     initiative: null,
+    initiativeBonus: null,
     name: null,
     hp: null,
     ac: null,
+    sortOrder: initiativeItems.length + 1,
+    isFromFrontend: true,
   });
 
-  const [initiativeItems, setInitiativeItems] = useState<InitiativeItem[]>([
-    createEmptyInitiativeItem(),
-  ]);
-  const [activeId, setActiveId] = useState(initiativeItems[0].id);
-  const [round, setRound] = useState(1);
+  const save = async () => {
+    await fetch(`http://localhost:8080/api/InitiativeLists/1`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      mode: "cors",
+      body: JSON.stringify({
+        accountId: 1,
+        name: "Default Encounter",
+        round,
+        activeId,
+        initiativeItems,
+      } as InitiativeList),
+    });
+  };
 
   const sort = () => {
     setInitiativeItems((prevState) => {
@@ -55,7 +86,10 @@ export default function Home() {
         if (sortValue !== 0) return sortValue;
         return (a.name ?? "").localeCompare(b.name ?? "");
       });
-      return newState;
+      return newState.map((initiativeItem, index) => ({
+        ...initiativeItem,
+        sortOrder: index + 1,
+      }));
     });
   };
 
@@ -145,7 +179,7 @@ export default function Home() {
       <div className={"max-w-300 mx-auto"}>
         <div className={"mt-4 mb-2 flex items-center"}>
           <h1 className={"text-2xl"}>Round {round}</h1>
-          <div className={"flex items-center ml-auto gap-4"}>
+          <div className={"flex items-center ml-auto gap-2"}>
             <button
               className={`${buttonSharedStyle} ${normalButtonColor}`}
               onClick={rollAllEmpty}
@@ -157,6 +191,12 @@ export default function Home() {
               onClick={sort}
             >
               Sort
+            </button>
+            <button
+              className={`${buttonSharedStyle} ${normalButtonColor}`}
+              onClick={save}
+            >
+              Save
             </button>
           </div>
         </div>
@@ -172,7 +212,12 @@ export default function Home() {
           </Row>
           <DragDropProvider
             onDragEnd={(event) => {
-              setInitiativeItems((prevState) => move(prevState, event));
+              setInitiativeItems((prevState) =>
+                move(prevState, event).map((initiativeItem, index) => ({
+                  ...initiativeItem,
+                  sortOrder: index + 1,
+                })),
+              );
             }}
           >
             {initiativeItems.map((initiativeItem, index) => (
@@ -250,7 +295,7 @@ export default function Home() {
         </Table>
       </div>
       <footer
-        className={"absolute bottom-0 left-0 right-0 bg-purple-900 py-4 mt-8"}
+        className={"fixed bottom-0 left-0 right-0 bg-purple-900 py-4 mt-8"}
       >
         <div
           className={

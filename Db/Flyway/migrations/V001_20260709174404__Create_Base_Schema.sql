@@ -20,26 +20,25 @@ create table initiative_list
     account_id int                                   not null
         constraint initiative_list_account_id_fk
             references account,
-    initiative int,
-    initiative_bonus int
     name       varchar(255)                          not null,
-    hp         int,
-    ac         int
+    round      int                                   not null
 )
 go
 
-create table to_do_item
+create table initiative_item
 (
     id            int identity
-        constraint to_do_item_pk
+        constraint initiative_item_pk
             primary key,
-    to_do_list_id int                                   not null
-        constraint to_do_item_to_do_item_id_fk
-            references to_do_item,
-    description   varchar(255)                          not null,
-    created_at    datetime2(7) default sysutcdatetime() not null,
-    completed_at  datetime2(7),
-    updated_at    datetime2(7) default sysutcdatetime() not null,
-    deleted_at    datetime2(7)
+    initiative_list_id int                                   not null
+        constraint initiative_item_initiative_list_id_fk
+            references initiative_list,
+	initiative int,
+    initiative_bonus int,
+    name       varchar(255),
+    hp         int,
+    ac         int,
+    is_active  bit                                           not null,
+    sort_order int                                           not null
 )
 go

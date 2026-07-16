@@ -39,6 +39,9 @@ services:
       dockerfile: ./Api/Dockerfile
     ports:
       - 8080:8080
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__AegisContext: User ID=sa;Password=${MSSQL_SA_PASSWORD};Initial Catalog=${MSSQL_DB_NAME};Server=db;trustServerCertificate=true
     depends_on:
       db_migration:
         condition: service_completed_successfully
@@ -47,7 +50,13 @@ services:
     build:
       context: ./Ui
     ports:
-      - 3000:3000
+      - 5173:5173
+    develop:
+      watch:
+        - action: sync
+          path: ./Ui/app
+          target: /app/app
+          initial_sync: true
     depends_on:
       db_migration:
         condition: service_completed_successfully
