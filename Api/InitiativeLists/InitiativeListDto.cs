@@ -5,5 +5,5 @@ public record InitiativeListDto(
     string Name,
     int Round,
     string ActiveId,
-    IEnumerable<InitiativeItemDto> InitiativeItems
+    IEnumerable<InitiativeListItemDto> InitiativeListItems
 );

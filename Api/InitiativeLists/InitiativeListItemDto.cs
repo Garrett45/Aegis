@@ -1,6 +1,6 @@
 ﻿namespace Api.InitiativeLists;
 
-public record InitiativeItemDto(
+public record InitiativeListItemDto(
     string Id,
     int? Initiative,
     int? InitiativeBonus,

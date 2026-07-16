@@ -16,9 +16,9 @@ public partial class AegisContext : DbContext
 
     public virtual DbSet<FlywaySchemaHistory> FlywaySchemaHistories { get; set; }
 
-    public virtual DbSet<InitiativeItem> InitiativeItems { get; set; }
-
     public virtual DbSet<InitiativeList> InitiativeLists { get; set; }
+
+    public virtual DbSet<InitiativeListItem> InitiativeListItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,7 +32,6 @@ public partial class AegisContext : DbContext
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("created_at");
-            entity.Property(e => e.DeletedAt).HasColumnName("deleted_at");
             entity.Property(e => e.FirstName)
                 .HasMaxLength(255)
                 .IsUnicode(false)
@@ -85,11 +84,37 @@ public partial class AegisContext : DbContext
                 .HasColumnName("version");
         });
 
-        modelBuilder.Entity<InitiativeItem>(entity =>
+        modelBuilder.Entity<InitiativeList>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("initiative_item_pk");
+            entity.HasKey(e => e.Id).HasName("initiative_list_pk");
 
-            entity.ToTable("initiative_item");
+            entity.ToTable("initiative_list");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.AccountId).HasColumnName("account_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.Round).HasColumnName("round");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("updated_at");
+
+            entity.HasOne(d => d.Account).WithMany(p => p.InitiativeLists)
+                .HasForeignKey(d => d.AccountId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("initiative_list_account_id_fk");
+        });
+
+        modelBuilder.Entity<InitiativeListItem>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("initiative_list_item_pk");
+
+            entity.ToTable("initiative_list_item");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Ac).HasColumnName("ac");
@@ -104,30 +129,10 @@ public partial class AegisContext : DbContext
                 .HasColumnName("name");
             entity.Property(e => e.SortOrder).HasColumnName("sort_order");
 
-            entity.HasOne(d => d.InitiativeList).WithMany(p => p.InitiativeItems)
+            entity.HasOne(d => d.InitiativeList).WithMany(p => p.InitiativeListItems)
                 .HasForeignKey(d => d.InitiativeListId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("initiative_item_initiative_list_id_fk");
-        });
-
-        modelBuilder.Entity<InitiativeList>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("initiative_list_pk");
-
-            entity.ToTable("initiative_list");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.AccountId).HasColumnName("account_id");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("name");
-            entity.Property(e => e.Round).HasColumnName("round");
-
-            entity.HasOne(d => d.Account).WithMany(p => p.InitiativeLists)
-                .HasForeignKey(d => d.AccountId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("initiative_list_account_id_fk");
+                .HasConstraintName("initiative_list_item_initiative_list_id_fk");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -13,7 +13,11 @@ public partial class InitiativeList
 
     public int Round { get; set; }
 
+    public DateTime CreatedAt { get; set; }
+
+    public DateTime UpdatedAt { get; set; }
+
     public virtual Account Account { get; set; } = null!;
 
-    public virtual ICollection<InitiativeItem> InitiativeItems { get; set; } = new List<InitiativeItem>();
+    public virtual ICollection<InitiativeListItem> InitiativeListItems { get; set; } = new List<InitiativeListItem>();
 }

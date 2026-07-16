@@ -17,7 +17,5 @@ public partial class Account
 
     public DateTime UpdatedAt { get; set; }
 
-    public DateTime? DeletedAt { get; set; }
-
     public virtual ICollection<InitiativeList> InitiativeLists { get; set; } = new List<InitiativeList>();
 }

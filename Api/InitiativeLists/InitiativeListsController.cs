@@ -28,28 +28,28 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
 
     private async Task<InitiativeListDto> MapInitiativeListToDto(InitiativeList initiativeList)
     {
-        var initiativeItems = await context.InitiativeItems
-            .Where(initiativeItem => initiativeItem.InitiativeListId == initiativeList.Id)
-            .Select(initiativeItem => new InitiativeItemDto(
-                initiativeItem.Id.ToString(),
-                initiativeItem.Initiative,
-                initiativeItem.InitiativeBonus,
-                initiativeItem.Name,
-                initiativeItem.Hp,
-                initiativeItem.Ac,
-                initiativeItem.SortOrder
+        var initiativeListItems = await context.InitiativeListItems
+            .Where(initiativeListItem => initiativeListItem.InitiativeListId == initiativeList.Id)
+            .Select(initiativeListItem => new InitiativeListItemDto(
+                initiativeListItem.Id.ToString(),
+                initiativeListItem.Initiative,
+                initiativeListItem.InitiativeBonus,
+                initiativeListItem.Name,
+                initiativeListItem.Hp,
+                initiativeListItem.Ac,
+                initiativeListItem.SortOrder
             ))
             .ToListAsync();
-        var activeInitiativeItem = await context.InitiativeItems
-            .FirstOrDefaultAsync(initiativeItem =>
-                initiativeItem.InitiativeListId == initiativeList.Id && initiativeItem.IsActive);
+        var activeInitiativeItem = await context.InitiativeListItems
+            .FirstOrDefaultAsync(initiativeListItem =>
+                initiativeListItem.InitiativeListId == initiativeList.Id && initiativeListItem.IsActive);
 
         return new InitiativeListDto(
             initiativeList.Id,
             initiativeList.Name,
             initiativeList.Round,
             activeInitiativeItem?.Id.ToString() ?? "",
-            initiativeItems
+            initiativeListItems
         );
     }
 
@@ -108,22 +108,23 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
         // never happen, it kind of just makes more sense to clear everything and re-add it,
         // particularly since we aren't even using this data except on initial page load, and
         // since this significantly simplifies the code
-        var currentInitiativeItems = context.InitiativeItems
-            .Where(initiativeItem => initiativeItem.InitiativeListId == id)
+        var currentInitiativeListItems = context.InitiativeListItems
+            .Where(initiativeListItem => initiativeListItem.InitiativeListId == id)
             .ToList();
-        foreach (var initiativeItem in currentInitiativeItems) context.InitiativeItems.Remove(initiativeItem);
+        foreach (var initiativeListItem in currentInitiativeListItems)
+            context.InitiativeListItems.Remove(initiativeListItem);
 
-        foreach (var initiativeItemDto in initiativeListDto.InitiativeItems)
-            await context.InitiativeItems.AddAsync(new InitiativeItem
+        foreach (var initiativeListItemDto in initiativeListDto.InitiativeListItems)
+            await context.InitiativeListItems.AddAsync(new InitiativeListItem
             {
                 InitiativeListId = id,
-                Initiative = initiativeItemDto.Initiative,
-                InitiativeBonus = initiativeItemDto.InitiativeBonus,
-                Name = initiativeItemDto.Name,
-                Hp = initiativeItemDto.Hp,
-                Ac = initiativeItemDto.Ac,
-                IsActive = initiativeListDto.ActiveId == initiativeItemDto.Id,
-                SortOrder = initiativeItemDto.SortOrder
+                Initiative = initiativeListItemDto.Initiative,
+                InitiativeBonus = initiativeListItemDto.InitiativeBonus,
+                Name = initiativeListItemDto.Name,
+                Hp = initiativeListItemDto.Hp,
+                Ac = initiativeListItemDto.Ac,
+                IsActive = initiativeListDto.ActiveId == initiativeListItemDto.Id,
+                SortOrder = initiativeListItemDto.SortOrder
             });
 
         await context.SaveChangesAsync();
@@ -135,16 +136,17 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
     {
         var initiativeList = await context.InitiativeLists.FindAsync(id);
         if (initiativeList == null) return NotFound();
-        
+
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
         context.InitiativeLists.Remove(initiativeList);
 
-        var currentInitiativeItems = context.InitiativeItems
-            .Where(initiativeItem => initiativeItem.InitiativeListId == id)
+        var currentInitiativeListItems = context.InitiativeListItems
+            .Where(initiativeListItem => initiativeListItem.InitiativeListId == id)
             .ToList();
-        foreach (var initiativeItem in currentInitiativeItems) context.InitiativeItems.Remove(initiativeItem);
+        foreach (var initiativeListItem in currentInitiativeListItems)
+            context.InitiativeListItems.Remove(initiativeListItem);
 
         await context.SaveChangesAsync();
         return NoContent();

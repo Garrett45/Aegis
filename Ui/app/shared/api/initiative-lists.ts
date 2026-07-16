@@ -13,10 +13,10 @@ export interface InitiativeListDto {
   name: string;
   round: number;
   activeId: string;
-  initiativeItems: InitiativeItemDto[];
+  initiativeListItems: InitiativeListItemDto[];
 }
 
-export interface InitiativeItemDto {
+export interface InitiativeListItemDto {
   id: string;
   initiative: number | null;
   initiativeBonus: number | null;

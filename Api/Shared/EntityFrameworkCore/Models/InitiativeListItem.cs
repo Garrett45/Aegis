@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Api.Shared.EntityFrameworkCore.Models;
 
-public partial class InitiativeItem
+public partial class InitiativeListItem
 {
     public int Id { get; set; }
 

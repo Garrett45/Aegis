@@ -7,8 +7,7 @@ create table account
     first_name           varchar(255)                          not null,
     last_name            varchar(255)                          not null,
     created_at           datetime2(7) default sysutcdatetime() not null,
-    updated_at           datetime2(7) default sysutcdatetime() not null,
-    deleted_at           datetime2(7)
+    updated_at           datetime2(7) default sysutcdatetime() not null
 )
 go
 
@@ -21,17 +20,19 @@ create table initiative_list
         constraint initiative_list_account_id_fk
             references account,
     name       varchar(255)                          not null,
-    round      int                                   not null
+    round      int                                   not null,
+    created_at           datetime2(7) default sysutcdatetime() not null,
+    updated_at           datetime2(7) default sysutcdatetime() not null
 )
 go
 
-create table initiative_item
+create table initiative_list_item
 (
     id            int identity
-        constraint initiative_item_pk
+        constraint initiative_list_item_pk
             primary key,
     initiative_list_id int                                   not null
-        constraint initiative_item_initiative_list_id_fk
+        constraint initiative_list_item_initiative_list_id_fk
             references initiative_list,
 	initiative int,
     initiative_bonus int,

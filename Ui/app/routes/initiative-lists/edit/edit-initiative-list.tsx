@@ -16,8 +16,8 @@ import type {
 } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import {
   allInitiativeListsQueryKey,
-  type InitiativeItemDto,
-  type InitiativeListDto
+  type InitiativeListDto,
+  type InitiativeListItemDto
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
@@ -70,20 +70,20 @@ const InternalInitiativeList = ({
   initiativeList,
 }: InternalInitiativeListProps) => {
   const auth = useAuth();
-  const [initiativeItems, setInitiativeItems] = useState<InitiativeItemDto[]>(
-    initiativeList.initiativeItems,
-  );
+  const [initiativeListItems, setInitiativeListItems] = useState<
+    InitiativeListItemDto[]
+  >(initiativeList.initiativeListItems);
   const [activeId, setActiveId] = useState(initiativeList.activeId);
   const [round, setRound] = useState(initiativeList.round);
 
-  const createEmptyInitiativeItem = () => ({
+  const createEmptyInitiativeListItem = () => ({
     id: uuidv4(),
     initiative: null,
     initiativeBonus: null,
     name: null,
     hp: null,
     ac: null,
-    sortOrder: initiativeItems.length + 1,
+    sortOrder: initiativeListItems.length + 1,
   });
 
   const queryClient = useQueryClient();
@@ -103,7 +103,7 @@ const InternalInitiativeList = ({
             name: initiativeList.name,
             round,
             activeId,
-            initiativeItems,
+            initiativeListItems: initiativeListItems,
           } as InitiativeListDto),
         },
       );
@@ -117,28 +117,28 @@ const InternalInitiativeList = ({
   });
 
   const sort = () => {
-    setInitiativeItems((prevState) => {
+    setInitiativeListItems((prevState) => {
       const newState = [...prevState];
       newState.sort((a, b) => {
         const sortValue = (b.initiative ?? 0) - (a.initiative ?? 0);
         if (sortValue !== 0) return sortValue;
         return (a.name ?? "").localeCompare(b.name ?? "");
       });
-      return newState.map((initiativeItem, index) => ({
-        ...initiativeItem,
+      return newState.map((inititiativeListItem, index) => ({
+        ...inititiativeListItem,
         sortOrder: index + 1,
       }));
     });
   };
 
   const rollAllEmpty = () => {
-    setInitiativeItems((prevState) =>
-      prevState.map((initiativeItem) => ({
-        ...initiativeItem,
+    setInitiativeListItems((prevState) =>
+      prevState.map((inititiativeListItem) => ({
+        ...inititiativeListItem,
         initiative:
-          initiativeItem.initiative == null
+          inititiativeListItem.initiative == null
             ? roll()
-            : initiativeItem.initiative,
+            : inititiativeListItem.initiative,
       })),
     );
   };
@@ -153,11 +153,11 @@ const InternalInitiativeList = ({
     else return numberValue;
   };
 
-  const changeInitiativeItemValue = (
+  const changeInitiativeListItemValue = (
     index: number,
-    value: Partial<InitiativeItemDto>,
+    value: Partial<InitiativeListItemDto>,
   ) =>
-    setInitiativeItems((prevState) => {
+    setInitiativeListItems((prevState) => {
       const newState = [...prevState];
       newState.splice(index, 1, {
         ...prevState[index],
@@ -166,25 +166,25 @@ const InternalInitiativeList = ({
       return newState;
     });
 
-  const activeIndex = initiativeItems.findIndex(
-    (initiativeItem) => initiativeItem.id === activeId,
+  const activeIndex = initiativeListItems.findIndex(
+    (inititiativeListItem) => inititiativeListItem.id === activeId,
   );
 
   const setPrevItemActive = () => {
     // if out of range, put the active index at 0
-    if (activeIndex < 0 || activeIndex >= initiativeItems.length)
-      setActiveId(initiativeItems[0].id);
+    if (activeIndex < 0 || activeIndex >= initiativeListItems.length)
+      setActiveId(initiativeListItems[0].id);
 
     // if at the first element and its after the first round, go the previous round
     else if (activeIndex == 0 && round > 1) {
-      const activeItem = initiativeItems[initiativeItems.length - 1];
+      const activeItem = initiativeListItems[initiativeListItems.length - 1];
       setActiveId(activeItem.id);
       setRound((prevState) => prevState - 1);
     }
 
     // if the index is not 0, move it back one
     else if (activeIndex > 0) {
-      const activeItem = initiativeItems[activeIndex - 1];
+      const activeItem = initiativeListItems[activeIndex - 1];
       setActiveId(activeItem.id);
     }
 
@@ -193,12 +193,12 @@ const InternalInitiativeList = ({
 
   const setNextItemActive = () => {
     // if out of range, put the active index at 0
-    if (activeIndex < 0 || activeIndex >= initiativeItems.length)
-      setActiveId(initiativeItems[0].id);
+    if (activeIndex < 0 || activeIndex >= initiativeListItems.length)
+      setActiveId(initiativeListItems[0].id);
 
     // if at the last element, move back to the first and go to the next round
-    else if (activeIndex >= initiativeItems.length - 1) {
-      const activeItem = initiativeItems[0];
+    else if (activeIndex >= initiativeListItems.length - 1) {
+      const activeItem = initiativeListItems[0];
       setActiveId(activeItem.id);
       setRound((prevState) => prevState + 1);
     }
@@ -206,7 +206,7 @@ const InternalInitiativeList = ({
     // if we reach here, it is within range, and not the last element, so just
     // move forward
     else {
-      const activeItem = initiativeItems[activeIndex + 1];
+      const activeItem = initiativeListItems[activeIndex + 1];
       setActiveId(activeItem.id);
     }
   };
@@ -252,81 +252,82 @@ const InternalInitiativeList = ({
           </Row>
           <DragDropProvider
             onDragEnd={(event) => {
-              setInitiativeItems((prevState) =>
-                move(prevState, event).map((initiativeItem, index) => ({
-                  ...initiativeItem,
+              setInitiativeListItems((prevState) =>
+                move(prevState, event).map((inititiativeListItem, index) => ({
+                  ...inititiativeListItem,
                   sortOrder: index + 1,
                 })),
               );
             }}
           >
-            {initiativeItems.map((initiativeItem, index) => (
+            {initiativeListItems.map((inititiativeListItem, index) => (
               <DraggableRow
                 gridColStyle={tableGridColStyle}
                 index={index}
-                id={initiativeItem.id}
-                key={initiativeItem.id}
+                id={inititiativeListItem.id}
+                key={inititiativeListItem.id}
               >
                 <InitiativeInputCell
-                  active={initiativeItem.id === activeId}
-                  value={initiativeItem.initiative ?? ""}
+                  active={inititiativeListItem.id === activeId}
+                  value={inititiativeListItem.initiative ?? ""}
                   onChange={(e) =>
-                    changeInitiativeItemValue(index, {
+                    changeInitiativeListItemValue(index, {
                       initiative: parseNumberValue(
                         e.target.value,
-                        initiativeItems[index].initiative,
+                        initiativeListItems[index].initiative,
                       ),
                     })
                   }
                   onDiceClick={(e) =>
-                    changeInitiativeItemValue(index, {
+                    changeInitiativeListItemValue(index, {
                       initiative: roll(),
                     })
                   }
                 />
                 <InputCell
-                  active={initiativeItem.id === activeId}
-                  value={initiativeItem.name ?? ""}
+                  active={inititiativeListItem.id === activeId}
+                  value={inititiativeListItem.name ?? ""}
                   onChange={(e) =>
-                    changeInitiativeItemValue(index, {
+                    changeInitiativeListItemValue(index, {
                       name: e.target.value == "" ? null : e.target.value,
                     })
                   }
                 />
                 <InputCell
-                  active={initiativeItem.id === activeId}
-                  value={initiativeItem.hp ?? ""}
+                  active={inititiativeListItem.id === activeId}
+                  value={inititiativeListItem.hp ?? ""}
                   onChange={(e) =>
-                    changeInitiativeItemValue(index, {
+                    changeInitiativeListItemValue(index, {
                       hp: parseNumberValue(
                         e.target.value,
-                        initiativeItems[index].hp,
+                        initiativeListItems[index].hp,
                       ),
                     })
                   }
                 />
                 <InputCell
-                  active={initiativeItem.id === activeId}
-                  value={initiativeItem.ac ?? ""}
+                  active={inititiativeListItem.id === activeId}
+                  value={inititiativeListItem.ac ?? ""}
                   onChange={(e) =>
-                    changeInitiativeItemValue(index, {
+                    changeInitiativeListItemValue(index, {
                       ac: parseNumberValue(
                         e.target.value,
-                        initiativeItems[index].ac,
+                        initiativeListItems[index].ac,
                       ),
                     })
                   }
                 />
                 <DeleteCell
                   onClick={() => {
-                    if (initiativeItems.length === 1) return;
+                    if (initiativeListItems.length === 1) return;
 
-                    setInitiativeItems((prevState) => {
+                    setInitiativeListItems((prevState) => {
                       const newState = [...prevState];
                       newState.splice(index, 1);
                       return newState;
                     });
-                    if (initiativeItem.id === activeId) setNextItemActive();
+                    if (inititiativeListItem.id === activeId)
+                      setNextItemActive();
                   }}
                 />
               </DraggableRow>
@@ -350,9 +351,9 @@ const InternalInitiativeList = ({
           </button>
           <button
             onClick={() =>
-              setInitiativeItems((prevState) => [
+              setInitiativeListItems((prevState) => [
                 ...prevState,
-                createEmptyInitiativeItem(),
+                createEmptyInitiativeListItem(),
               ])
             }
             className={`${buttonSharedStyles} bg-green-700`}
