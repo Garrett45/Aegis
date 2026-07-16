@@ -15,14 +15,40 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
         return await context.InitiativeLists.ToListAsync();
     }
 
+    private async Task<InitiativeListDto> MapInitiativeListToDto(InitiativeList initiativeList)
+    {
+        var initiativeItems = await context.InitiativeItems
+            .Where(initiativeItem => initiativeItem.InitiativeListId == initiativeList.Id)
+            .Select(initiativeItem => new InitiativeItemDto(
+                initiativeItem.Id.ToString(),
+                initiativeItem.Initiative,
+                initiativeItem.InitiativeBonus,
+                initiativeItem.Name,
+                initiativeItem.Hp,
+                initiativeItem.Ac,
+                initiativeItem.SortOrder
+            ))
+            .ToListAsync();
+        var activeInitiativeItem = await context.InitiativeItems
+            .FirstOrDefaultAsync(initiativeItem =>
+                initiativeItem.InitiativeListId == initiativeList.Id && initiativeItem.IsActive);
+
+        return new InitiativeListDto(
+            initiativeList.AccountId,
+            initiativeList.Name,
+            initiativeList.Round,
+            activeInitiativeItem?.Id.ToString() ?? "",
+            initiativeItems
+        );
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<InitiativeList>> GetInitiativeList(int id)
     {
-        var initiativelist = await context.InitiativeLists.FindAsync(id);
+        var initiativeList = await context.InitiativeLists.FindAsync(id);
+        if (initiativeList is null) return BadRequest("Could not find initiative list");
 
-        if (initiativelist == null) return NotFound();
-
-        return initiativelist;
+        return Ok(await MapInitiativeListToDto(initiativeList));
     }
 
     [HttpPut("{id}")]
@@ -59,29 +85,7 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
             });
 
         await context.SaveChangesAsync();
-
-        var initiativeItems = await context.InitiativeItems
-            .Where(initiativeItem => initiativeItem.InitiativeListId == id)
-            .Select(initiativeItem => new InitiativeItemDto(
-                initiativeItem.Id.ToString(),
-                initiativeItem.Initiative,
-                initiativeItem.InitiativeBonus,
-                initiativeItem.Name,
-                initiativeItem.Hp,
-                initiativeItem.Ac,
-                initiativeItem.SortOrder
-            ))
-            .ToListAsync();
-        var activeInitiativeItem = await context.InitiativeItems
-            .FirstOrDefaultAsync(initiativeItem => initiativeItem.InitiativeListId == id && initiativeItem.IsActive);
-
-        return Ok(new InitiativeListDto(
-            initiativeList.AccountId,
-            initiativeList.Name,
-            initiativeList.Round,
-            activeInitiativeItem?.Id.ToString() ?? "",
-            initiativeItems
-        ));
+        return Ok(await MapInitiativeListToDto(initiativeList));
     }
 
     // POST: api/InitiativeList
