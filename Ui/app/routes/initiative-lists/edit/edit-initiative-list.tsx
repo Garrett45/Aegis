@@ -3,32 +3,18 @@ import { DragDropProvider } from "@dnd-kit/react";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
-import InitiativeInputCell from "~/routes/initiative-lists/initiative-input-cell";
+import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-input-cell";
 import DeleteCell from "~/shared/table/cells/delete-cell";
 import HeadCell from "~/shared/table/cells/head-cell";
 import InputCell from "~/shared/table/cells/input-cell";
 import DraggableRow from "~/shared/table/rows/draggable-row";
 import Row from "~/shared/table/rows/row";
 import Table from "~/shared/table/table";
-import type { Route } from "../../../.react-router/types/app/routes/initiative-lists/+types/initiative-list";
-
-interface InitiativeList {
-  accountId: number;
-  name: string;
-  round: number;
-  activeId: string;
-  initiativeItems: InitiativeItem[];
-}
-
-interface InitiativeItem {
-  id: string;
-  initiative: number | null;
-  initiativeBonus: number | null;
-  name: string | null;
-  hp: number | null;
-  ac: number | null;
-  sortOrder: number;
-}
+import { buttonSharedStyles, normalButtonColor } from "~/shared/button/styles";
+import type {
+  Route
+} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
+import type { InitiativeItemDto, InitiativeListDto } from "~/shared/api/initiative-lists";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -44,18 +30,15 @@ export async function loader({ params }: Route.LoaderArgs) {
   const initiativeListResponse = await fetch(
     `http://api:8080/api/InitiativeLists/${params.initiativeListId}`,
   );
-  return (await initiativeListResponse.json()) as InitiativeList;
+  return (await initiativeListResponse.json()) as InitiativeListDto;
 }
 
 const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
 
-const normalButtonColor = "bg-sky-800";
-const buttonSharedStyle = "px-4 py-2 text-xl cursor-pointer";
-
-export default function InitiativeList({
+export default function EditInitiativeList({
   loaderData: initiativeList,
 }: Route.ComponentProps) {
-  const [initiativeItems, setInitiativeItems] = useState<InitiativeItem[]>(
+  const [initiativeItems, setInitiativeItems] = useState<InitiativeItemDto[]>(
     initiativeList.initiativeItems,
   );
   const [activeId, setActiveId] = useState(initiativeList.activeId);
@@ -72,19 +55,23 @@ export default function InitiativeList({
   });
 
   const save = async () => {
-    await fetch(`http://localhost:8080/api/InitiativeLists/1`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
+    await fetch(
+      `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: initiativeList.id,
+          accountId: initiativeList.accountId,
+          name: initiativeList.name,
+          round,
+          activeId,
+          initiativeItems,
+        } as InitiativeListDto),
       },
-      body: JSON.stringify({
-        accountId: initiativeList.accountId,
-        name: initiativeList.name,
-        round,
-        activeId,
-        initiativeItems,
-      } as InitiativeList),
-    });
+    );
   };
 
   const sort = () => {
@@ -126,7 +113,7 @@ export default function InitiativeList({
 
   const changeInitiativeItemValue = (
     index: number,
-    value: Partial<InitiativeItem>,
+    value: Partial<InitiativeItemDto>,
   ) =>
     setInitiativeItems((prevState) => {
       const newState = [...prevState];
@@ -193,19 +180,19 @@ export default function InitiativeList({
           <h1 className={"text-2xl"}>Round {round}</h1>
           <div className={"flex items-center ml-auto gap-2"}>
             <button
-              className={`${buttonSharedStyle} ${normalButtonColor}`}
+              className={`${buttonSharedStyles} ${normalButtonColor}`}
               onClick={rollAllEmpty}
             >
               Roll All Empty
             </button>
             <button
-              className={`${buttonSharedStyle} ${normalButtonColor}`}
+              className={`${buttonSharedStyles} ${normalButtonColor}`}
               onClick={sort}
             >
               Sort
             </button>
             <button
-              className={`${buttonSharedStyle} ${normalButtonColor}`}
+              className={`${buttonSharedStyles} ${normalButtonColor}`}
               onClick={save}
             >
               Save
@@ -316,7 +303,7 @@ export default function InitiativeList({
         >
           <button
             onClick={setPrevItemActive}
-            className={`${buttonSharedStyle} ${normalButtonColor}`}
+            className={`${buttonSharedStyles} ${normalButtonColor}`}
           >
             Prev
           </button>
@@ -327,13 +314,13 @@ export default function InitiativeList({
                 createEmptyInitiativeItem(),
               ])
             }
-            className={`${buttonSharedStyle} bg-green-700`}
+            className={`${buttonSharedStyles} bg-green-700`}
           >
             <FaPlus />
           </button>
           <button
             onClick={setNextItemActive}
-            className={`${buttonSharedStyle} ${normalButtonColor}`}
+            className={`${buttonSharedStyles} ${normalButtonColor}`}
           >
             Next
           </button>

@@ -5,6 +5,9 @@ import DeleteCell from "~/shared/table/cells/delete-cell";
 import Table from "~/shared/table/table";
 import Cell from "~/shared/table/cells/cell";
 import LinkCell from "~/shared/table/cells/link-cell";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/button/styles";
+import { Link } from "react-router";
+import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,13 +17,6 @@ export function meta({}: Route.MetaArgs) {
       content: "This is the home page of all the DM tools under Athena",
     },
   ];
-}
-
-interface InitiativeListBasicResponse {
-  id: number;
-  accountId: number;
-  name: string;
-  round: number;
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -41,9 +37,19 @@ export default function Home({
 
   return (
     <main>
-      <header className="flex flex-col items-center gap-9"></header>
       <div className={"max-w-300 mx-auto"}>
-        <h1 className={"text-2xl mt-4 mb-2"}>Encounters</h1>
+        <div className={"mt-4 mb-2 flex items-center"}>
+          <h1 className={"text-2xl"}>Initiative Lists</h1>
+          <div className={"flex items-center ml-auto gap-2"}>
+            <Link
+              className={`${buttonSharedStyles} ${normalButtonColor}`}
+              to={"/initiative-lists/add"}
+            >
+              Add
+            </Link>
+          </div>
+        </div>
+
         <Table gridColStyle={`grid-cols-[3fr_1fr_50px]`}>
           <Row>
             <HeadCell>Name</HeadCell>

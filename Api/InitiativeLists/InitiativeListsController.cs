@@ -42,6 +42,7 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
                 initiativeItem.InitiativeListId == initiativeList.Id && initiativeItem.IsActive);
 
         return new InitiativeListDto(
+            initiativeList.Id,
             initiativeList.AccountId,
             initiativeList.Name,
             initiativeList.Round,
@@ -59,9 +60,33 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
         return Ok(await MapInitiativeListToDto(initiativeList));
     }
 
+    [HttpPost]
+    public async Task<ActionResult<InitiativeListBasicResponse>> CreateInitiativeList(
+        CreateInitiativeListRequest initiativeListRequest)
+    {
+        var initiativeList = new InitiativeList
+        {
+            // TODO: set this to correct account ID when we get that added
+            AccountId = 1,
+            Name = initiativeListRequest.Name,
+            Round = 1
+        };
+        context.InitiativeLists.Add(initiativeList);
+        await context.SaveChangesAsync();
+
+        return CreatedAtAction("GetInitiativeList", new { id = initiativeList.Id }, new InitiativeListBasicResponse(
+            initiativeList.Id,
+            initiativeList.AccountId,
+            initiativeList.Name,
+            initiativeList.Round
+        ));
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> PutInitiativeList(int id, InitiativeListDto initiativeListDto)
     {
+        if (id != initiativeListDto.Id) return BadRequest("Initiative list ID does not match ID in URL");
+
         var initiativeList = await context.InitiativeLists.FindAsync(id);
         if (initiativeList is null) return BadRequest("Could not find initiative list");
 
@@ -94,17 +119,6 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
 
         await context.SaveChangesAsync();
         return Ok(await MapInitiativeListToDto(initiativeList));
-    }
-
-    // POST: api/InitiativeList
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<InitiativeList>> PostInitiativeList(InitiativeList initiativelist)
-    {
-        context.InitiativeLists.Add(initiativelist);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction("GetInitiativeList", new { id = initiativelist.Id }, initiativelist);
     }
 
     [HttpDelete("{id}")]
