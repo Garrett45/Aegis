@@ -5,10 +5,7 @@ import DeleteCell from "~/shared/components/table/cells/delete-cell";
 import Table from "~/shared/components/table/table";
 import Cell from "~/shared/components/table/cells/cell";
 import LinkCell from "~/shared/components/table/cells/link-cell";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 import { Link } from "react-router";
 import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,13 +23,19 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const auth = useAuth();
+  const initiativeListQueryKey = ["initiativeLists", auth.user?.profile.sub];
 
   const queryClient = useQueryClient();
   const { data: initiativeLists } = useQuery({
-    queryKey: ["initiativeLists"],
+    queryKey: initiativeListQueryKey,
     queryFn: async () => {
       const initiativeListResponse = await fetch(
         `http://localhost:8080/api/InitiativeLists`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+          },
+        },
       );
       return (await initiativeListResponse.json()) as InitiativeListBasicResponse[];
     },
@@ -42,11 +45,14 @@ export default function Home() {
     mutationFn: async (id: number) => {
       await fetch(`http://localhost:8080/api/InitiativeLists/${id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${auth.user?.access_token}`,
+        },
       });
     },
     onSuccess: async () => {
       // Invalidate and refetch
-      await queryClient.invalidateQueries({ queryKey: ["initiativeLists"] });
+      await queryClient.invalidateQueries({ queryKey: initiativeListQueryKey });
     },
   });
 

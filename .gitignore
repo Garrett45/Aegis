@@ -652,6 +652,7 @@ sketch
 
 .DS_Store
 .env
+.env*local
 /node_modules/
 
 # React Router

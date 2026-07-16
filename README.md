@@ -33,10 +33,12 @@ Compose for containers of SQL Server, ASP.NET Core backend, React frontend. Basi
 # Getting Types From DB
 
 ```
-
+dotnet ef dbcontext scaffold "User ID=sa;Password=YourStrong@Password123;Initial Catalog=aegis;Server=127.0.0.1;trustServerCertificate=true" Microsoft.EntityFrameworkCore.SqlServer --output-dir Shared/EntityFrameworkCore/Models --context-dir Shared/EntityFrameworkCore --force --no-onconfiguring
 ```
 
+# URL Weirdness
 
+Since we are running these things from containers, we sometimes have to use URLs that don't look quite right. The authority for the API, for example, uses "http://host.docker.internal:8000/realms/athena", because thats whats required to connect to the keycloak docker container on the system. However, valid issuer, in that same configuration, which represents the same thing, is set to "http://localhost:8000/realms/athena", because that is what the frontend requests to
 
 # Inspiration
 
