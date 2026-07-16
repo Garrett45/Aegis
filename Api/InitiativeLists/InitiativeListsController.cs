@@ -10,9 +10,17 @@ namespace Api.InitiativeLists;
 public class InitiativeListsController(AegisContext context) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<InitiativeList>>> GetInitiativeList()
+    public async Task<ActionResult<IEnumerable<InitiativeListBasicResponse>>> GetInitiativeList()
     {
-        return await context.InitiativeLists.ToListAsync();
+        // TODO: filter by logged in account once that is added in
+        return await context.InitiativeLists
+            .Select(initiativeList => new InitiativeListBasicResponse(
+                initiativeList.Id,
+                initiativeList.AccountId,
+                initiativeList.Name,
+                initiativeList.Round
+            ))
+            .ToListAsync();
     }
 
     private async Task<InitiativeListDto> MapInitiativeListToDto(InitiativeList initiativeList)
@@ -99,21 +107,20 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
         return CreatedAtAction("GetInitiativeList", new { id = initiativelist.Id }, initiativelist);
     }
 
-    // DELETE: api/InitiativeList/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteInitiativeList(int? id)
     {
-        var initiativelist = await context.InitiativeLists.FindAsync(id);
-        if (initiativelist == null) return NotFound();
+        var initiativeList = await context.InitiativeLists.FindAsync(id);
+        if (initiativeList == null) return NotFound();
 
-        context.InitiativeLists.Remove(initiativelist);
+        context.InitiativeLists.Remove(initiativeList);
+
+        var currentInitiativeItems = context.InitiativeItems
+            .Where(initiativeItem => initiativeItem.InitiativeListId == id)
+            .ToList();
+        foreach (var initiativeItem in currentInitiativeItems) context.InitiativeItems.Remove(initiativeItem);
+
         await context.SaveChangesAsync();
-
         return NoContent();
-    }
-
-    private bool InitiativeListExists(int? id)
-    {
-        return context.InitiativeLists.Any(e => e.Id == id);
     }
 }

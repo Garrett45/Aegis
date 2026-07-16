@@ -43,14 +43,11 @@ export function meta({}: Route.MetaArgs) {
 export async function loader({ params }: Route.LoaderArgs) {
   const initiativeListResponse = await fetch(
     `http://api:8080/api/InitiativeLists/${params.initiativeListId}`,
-    {
-      method: "GET",
-    },
   );
   return (await initiativeListResponse.json()) as InitiativeList;
 }
 
-const tableGridColStyle = "grid-cols-[50px_1fr_3fr_1fr_1fr_50px]";
+const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
 
 const normalButtonColor = "bg-sky-800";
 const buttonSharedStyle = "px-4 py-2 text-xl cursor-pointer";
