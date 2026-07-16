@@ -5,11 +5,18 @@ import DeleteCell from "~/shared/components/table/cells/delete-cell";
 import Table from "~/shared/components/table/table";
 import Cell from "~/shared/components/table/cells/cell";
 import LinkCell from "~/shared/components/table/cells/link-cell";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 import { Link } from "react-router";
-import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";
+import {
+  allInitiativeListsQueryKey,
+  type InitiativeListBasicResponse,
+} from "~/shared/api/initiative-lists";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
+import { appWidth } from "~/shared/components/layout/styles";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,11 +30,10 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const auth = useAuth();
-  const initiativeListQueryKey = ["initiativeLists", auth.user?.profile.sub];
 
   const queryClient = useQueryClient();
   const { data: initiativeLists } = useQuery({
-    queryKey: initiativeListQueryKey,
+    queryKey: allInitiativeListsQueryKey(auth),
     queryFn: async () => {
       const initiativeListResponse = await fetch(
         `http://localhost:8080/api/InitiativeLists`,
@@ -39,6 +45,7 @@ export default function Home() {
       );
       return (await initiativeListResponse.json()) as InitiativeListBasicResponse[];
     },
+    enabled: auth.isAuthenticated,
   });
 
   const { mutate: deleteInitiativeList } = useMutation({
@@ -52,43 +59,54 @@ export default function Home() {
     },
     onSuccess: async () => {
       // Invalidate and refetch
-      await queryClient.invalidateQueries({ queryKey: initiativeListQueryKey });
+      await queryClient.invalidateQueries({
+        queryKey: allInitiativeListsQueryKey(auth),
+      });
     },
   });
 
   return (
     <main>
-      <div className={"max-w-300 mx-auto"}>
-        <div className={"mt-4 mb-2 flex items-center"}>
-          <h1 className={"text-2xl"}>Initiative Lists</h1>
-          <div className={"flex items-center ml-auto gap-2"}>
-            <Link
-              className={`${buttonSharedStyles} ${normalButtonColor}`}
-              to={"/initiative-lists/add"}
-            >
-              Add
-            </Link>
-          </div>
-        </div>
+      <div className={`${appWidth} mx-auto`}>
+        {auth.isAuthenticated ? (
+          <>
+            <div className={"mt-4 mb-2 flex items-center"}>
+              <h1 className={"text-2xl"}>Initiative Lists</h1>
+              <div className={"flex items-center ml-auto gap-2"}>
+                <Link
+                  className={`${buttonSharedStyles} ${normalButtonColor}`}
+                  to={"/initiative-lists/add"}
+                >
+                  Add
+                </Link>
+              </div>
+            </div>
 
-        <Table gridColStyle={`grid-cols-[3fr_1fr_50px]`}>
-          <Row>
-            <HeadCell>Name</HeadCell>
-            <HeadCell>Round</HeadCell>
-            <HeadCell />
-          </Row>
-          {initiativeLists?.map((initiativeList) => (
-            <Row key={initiativeList.id}>
-              <LinkCell to={`/initiative-lists/${initiativeList.id}`}>
-                {initiativeList.name}
-              </LinkCell>
-              <Cell>{initiativeList.round}</Cell>
-              <DeleteCell
-                onClick={() => deleteInitiativeList(initiativeList.id)}
-              />
-            </Row>
-          ))}
-        </Table>
+            <Table gridColStyle={`grid-cols-[3fr_1fr_50px]`}>
+              <Row>
+                <HeadCell>Name</HeadCell>
+                <HeadCell>Round</HeadCell>
+                <HeadCell />
+              </Row>
+              {initiativeLists?.map?.((initiativeList) => (
+                <Row key={initiativeList.id}>
+                  <LinkCell to={`/initiative-lists/${initiativeList.id}`}>
+                    {initiativeList.name}
+                  </LinkCell>
+                  <Cell>{initiativeList.round}</Cell>
+                  <DeleteCell
+                    onClick={() => deleteInitiativeList(initiativeList.id)}
+                  />
+                </Row>
+              ))}
+            </Table>
+          </>
+        ) : (
+          <div>
+            You are not authenticated! To be able to see this page, you will
+            either need to log in or sign up
+          </div>
+        )}
       </div>
     </main>
   );

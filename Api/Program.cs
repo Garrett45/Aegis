@@ -1,3 +1,4 @@
+using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -53,6 +54,8 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+builder.Services.AddScoped<GetOrCreateAccount>();
 
 var app = builder.Build();
 

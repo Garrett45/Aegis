@@ -5,7 +5,13 @@ import {
 } from "~/shared/components/button/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";
+import {
+  allInitiativeListsQueryKey,
+  type InitiativeListBasicResponse,
+} from "~/shared/api/initiative-lists";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "react-oidc-context";
+import { appWidth } from "~/shared/components/layout/styles";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,36 +28,47 @@ interface CreateInitiativeListRequest {
 }
 
 export default function AddInitiativeList() {
+  const auth = useAuth();
+
   const navigate = useNavigate();
   const [addFormValues, setAddFormValues] =
     useState<CreateInitiativeListRequest>({
       name: "",
     });
 
-  const addInitiativeList = async () => {
-    const initiativeListResponse = await fetch(
-      `http://localhost:8080/api/InitiativeLists`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+  const queryClient = useQueryClient();
+  const { mutate: addInitiativeList } = useMutation({
+    mutationFn: async () => {
+      const initiativeListResponse = await fetch(
+        `http://localhost:8080/api/InitiativeLists`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(addFormValues),
         },
-        body: JSON.stringify(addFormValues),
-      },
-    );
-    const initiativeList =
-      (await initiativeListResponse.json()) as InitiativeListBasicResponse;
-    navigate(`/initiative-lists/${initiativeList.id}`);
-  };
+      );
+      return (await initiativeListResponse.json()) as InitiativeListBasicResponse;
+    },
+    onSuccess: async (data) => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({
+        queryKey: allInitiativeListsQueryKey(auth),
+      });
+      navigate(`/initiative-lists/${data.id}`);
+    },
+  });
 
   return (
     <main>
-      <div className={"max-w-300 mx-auto"}>
+      <div className={`${appWidth} mx-auto`}>
         <h1 className={"text-2xl mt-4 mb-2"}>Add Initiative List</h1>
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            addInitiativeList().catch((error) => console.error(error));
+            addInitiativeList();
           }}
         >
           <label className={"block text-xl"}>

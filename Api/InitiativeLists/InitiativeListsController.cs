@@ -1,3 +1,4 @@
+using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,13 +8,15 @@ namespace Api.InitiativeLists;
 
 [Route("api/[controller]")]
 [ApiController]
-public class InitiativeListsController(AegisContext context) : ControllerBase
+public class InitiativeListsController(AegisContext context, GetOrCreateAccount getOrCreateAccount) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<InitiativeListBasicResponse>>> GetInitiativeList()
     {
-        // TODO: filter by logged in account once that is added in
+        var currentAccount = await getOrCreateAccount.Execute(User);
+
         return await context.InitiativeLists
+            .Where(initiativeList => initiativeList.AccountId == currentAccount.Id)
             .Select(initiativeList => new InitiativeListBasicResponse(
                 initiativeList.Id,
                 initiativeList.AccountId,
@@ -43,7 +46,6 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
 
         return new InitiativeListDto(
             initiativeList.Id,
-            initiativeList.AccountId,
             initiativeList.Name,
             initiativeList.Round,
             activeInitiativeItem?.Id.ToString() ?? "",
@@ -57,6 +59,9 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
         var initiativeList = await context.InitiativeLists.FindAsync(id);
         if (initiativeList is null) return BadRequest("Could not find initiative list");
 
+        var currentAccount = await getOrCreateAccount.Execute(User);
+        if (initiativeList.AccountId != currentAccount.Id) return Forbid();
+
         return Ok(await MapInitiativeListToDto(initiativeList));
     }
 
@@ -64,10 +69,11 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
     public async Task<ActionResult<InitiativeListBasicResponse>> CreateInitiativeList(
         CreateInitiativeListRequest initiativeListRequest)
     {
+        var currentAccount = await getOrCreateAccount.Execute(User);
+
         var initiativeList = new InitiativeList
         {
-            // TODO: set this to correct account ID when we get that added
-            AccountId = 1,
+            AccountId = currentAccount.Id,
             Name = initiativeListRequest.Name,
             Round = 1
         };
@@ -90,7 +96,10 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
         var initiativeList = await context.InitiativeLists.FindAsync(id);
         if (initiativeList is null) return BadRequest("Could not find initiative list");
 
-        initiativeList.AccountId = initiativeListDto.AccountId;
+        var currentAccount = await getOrCreateAccount.Execute(User);
+        if (initiativeList.AccountId != currentAccount.Id) return Forbid();
+
+        initiativeList.AccountId = currentAccount.Id;
         initiativeList.Name = initiativeListDto.Name;
         initiativeList.Round = initiativeListDto.Round;
 
@@ -126,6 +135,9 @@ public class InitiativeListsController(AegisContext context) : ControllerBase
     {
         var initiativeList = await context.InitiativeLists.FindAsync(id);
         if (initiativeList == null) return NotFound();
+        
+        var currentAccount = await getOrCreateAccount.Execute(User);
+        if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
         context.InitiativeLists.Remove(initiativeList);
 

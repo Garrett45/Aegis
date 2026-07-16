@@ -10,15 +10,18 @@ import InputCell from "~/shared/components/table/cells/input-cell";
 import DraggableRow from "~/shared/components/table/rows/draggable-row";
 import Row from "~/shared/components/table/rows/row";
 import Table from "~/shared/components/table/table";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
-import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 import type {
-  InitiativeItemDto,
-  InitiativeListDto,
+  Route
+} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
+import {
+  allInitiativeListsQueryKey,
+  type InitiativeItemDto,
+  type InitiativeListDto
 } from "~/shared/api/initiative-lists";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "react-oidc-context";
+import { appWidth } from "~/shared/components/layout/styles";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -30,18 +33,43 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const initiativeListResponse = await fetch(
-    `http://api:8080/api/InitiativeLists/${params.initiativeListId}`,
-  );
-  return (await initiativeListResponse.json()) as InitiativeListDto;
-}
-
 const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
 
-export default function EditInitiativeList({
-  loaderData: initiativeList,
-}: Route.ComponentProps) {
+export default function EditInitiativeList({ params }: Route.ComponentProps) {
+  const auth = useAuth();
+  const {
+    data: initiativeList,
+    isPending: initiativeListPending,
+    isFetchedAfterMount,
+  } = useQuery({
+    queryKey: ["initiativeList", params.initiativeListId],
+    queryFn: async () => {
+      const initiativeListResponse = await fetch(
+        `http://localhost:8080/api/InitiativeLists/${params.initiativeListId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+          },
+        },
+      );
+      return (await initiativeListResponse.json()) as InitiativeListDto;
+    },
+    enabled: auth.isAuthenticated,
+  });
+
+  if (typeof initiativeList === "undefined" || !isFetchedAfterMount)
+    return undefined;
+  return <InternalInitiativeList initiativeList={initiativeList} />;
+}
+
+interface InternalInitiativeListProps {
+  initiativeList: InitiativeListDto;
+}
+
+const InternalInitiativeList = ({
+  initiativeList,
+}: InternalInitiativeListProps) => {
+  const auth = useAuth();
   const [initiativeItems, setInitiativeItems] = useState<InitiativeItemDto[]>(
     initiativeList.initiativeItems,
   );
@@ -58,25 +86,35 @@ export default function EditInitiativeList({
     sortOrder: initiativeItems.length + 1,
   });
 
-  const save = async () => {
-    await fetch(
-      `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+  const queryClient = useQueryClient();
+  const { mutate: save } = useMutation({
+    mutationFn: async () => {
+      await fetch(
+        `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: initiativeList.id,
+            accountId: initiativeList.accountId,
+            name: initiativeList.name,
+            round,
+            activeId,
+            initiativeItems,
+          } as InitiativeListDto),
         },
-        body: JSON.stringify({
-          id: initiativeList.id,
-          accountId: initiativeList.accountId,
-          name: initiativeList.name,
-          round,
-          activeId,
-          initiativeItems,
-        } as InitiativeListDto),
-      },
-    );
-  };
+      );
+    },
+    onSuccess: async () => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({
+        queryKey: allInitiativeListsQueryKey(auth),
+      });
+    },
+  });
 
   const sort = () => {
     setInitiativeItems((prevState) => {
@@ -175,8 +213,7 @@ export default function EditInitiativeList({
 
   return (
     <main>
-      <header className="flex flex-col items-center gap-9"></header>
-      <div className={"max-w-300 mx-auto"}>
+      <div className={`${appWidth} mx-auto`}>
         <h1 className={"text-2xl mt-4 mb-2"}>
           Encounter: {initiativeList.name}
         </h1>
@@ -197,7 +234,7 @@ export default function EditInitiativeList({
             </button>
             <button
               className={`${buttonSharedStyles} ${normalButtonColor}`}
-              onClick={save}
+              onClick={() => save()}
             >
               Save
             </button>
@@ -332,4 +369,4 @@ export default function EditInitiativeList({
       </footer>
     </main>
   );
-}
+};

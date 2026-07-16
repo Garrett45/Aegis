@@ -1,12 +1,24 @@
-import { isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import {
+  isRouteErrorResponse,
+  Link,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AuthProvider, useAuth } from "react-oidc-context";
 import { onSigninCallback, userManager } from "./auth-config.client";
 import { cellBackgroundColor } from "~/shared/components/table/cells/styles";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { appWidth } from "~/shared/components/layout/styles";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -53,12 +65,18 @@ export default function App() {
 
   return (
     <main>
-      <header className={`sticky top-0 w-full ${cellBackgroundColor}`}>
-        <div className={"mx-auto flex items-center max-w-300"}>
+      <header className={`sticky top-0 w-full ${cellBackgroundColor} mb-4`}>
+        <div className={`mx-auto flex items-center ${appWidth}`}>
           <Link className={`text-3xl py-8 cursor-pointer`} to={"/"}>
             Aegis
           </Link>
           <div className={"ml-auto flex gap-2"}>
+            {auth.isAuthenticated && (
+              <div>
+                <p>{auth.user?.profile.name}</p>
+                <p>{auth.user?.profile.email}</p>
+              </div>
+            )}
             {auth.isAuthenticated ? (
               <button
                 onClick={() => auth.signoutRedirect()}

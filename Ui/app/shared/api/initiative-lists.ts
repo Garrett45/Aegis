@@ -1,3 +1,5 @@
+import type { AuthContextProps } from "react-oidc-context";
+
 export interface InitiativeListBasicResponse {
   id: number;
   accountId: number;
@@ -23,3 +25,8 @@ export interface InitiativeItemDto {
   ac: number | null;
   sortOrder: number;
 }
+
+export const allInitiativeListsQueryKey = (auth: AuthContextProps) => [
+  "initiativeLists",
+  auth.user?.profile.sub,
+];
