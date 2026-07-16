@@ -92,7 +92,9 @@ Based on this initiative tracker: [Initiative Tracker | DM Tools](https://dm.too
   
   * Fix that deleting the active initiative breaks the initiative tracker. If we do delete the active, it should go to the next combatant, as killing something moves you forward in the turn order
   
-  * Initiative bonus should be modifiable outside of autocomplete creatures for custom creatures and players
+  * Initiative bonus should be modifiable outside of autocomplete creatures for custom creatures and players. I also disagree with showing it all the time, needs to be known rarely, and it clutters up the table (similar reasoning to why you only show the dice symbol on hover)
+  
+  * Despite previous comment, though, remove only showing dice symbol on hover, as it needlessly makes the 
 
 Originally, was going to have presets. Then, I realized having two separate tables that represent the same thing results in a lot of duplication, and that I wasn't really going to use the flexibility provided by having those separate tables. Then, I thought of putting a flag on initiative lists to mark some as presets, but I realized there was duplication there, too. Finally, I realized if I was not going to make anything special with the presets, I ought to just have a duplication feature
 

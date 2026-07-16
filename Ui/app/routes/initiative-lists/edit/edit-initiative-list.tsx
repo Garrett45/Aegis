@@ -10,18 +10,20 @@ import InputCell from "~/shared/components/table/cells/input-cell";
 import DraggableRow from "~/shared/components/table/rows/draggable-row";
 import Row from "~/shared/components/table/rows/row";
 import Table from "~/shared/components/table/table";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
-import type {
-  Route
-} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
+import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import {
   allInitiativeListsQueryKey,
   type InitiativeListDto,
-  type InitiativeListItemDto
+  type InitiativeListItemDto,
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
+import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -124,8 +126,8 @@ const InternalInitiativeList = ({
         if (sortValue !== 0) return sortValue;
         return (a.name ?? "").localeCompare(b.name ?? "");
       });
-      return newState.map((inititiativeListItem, index) => ({
-        ...inititiativeListItem,
+      return newState.map((initiativeListItem, index) => ({
+        ...initiativeListItem,
         sortOrder: index + 1,
       }));
     });
@@ -133,25 +135,17 @@ const InternalInitiativeList = ({
 
   const rollAllEmpty = () => {
     setInitiativeListItems((prevState) =>
-      prevState.map((inititiativeListItem) => ({
-        ...inititiativeListItem,
+      prevState.map((initiativeListItem) => ({
+        ...initiativeListItem,
         initiative:
-          inititiativeListItem.initiative == null
-            ? roll()
-            : inititiativeListItem.initiative,
+          initiativeListItem.initiative == null
+            ? roll() + (initiativeListItem.initiativeBonus ?? 0)
+            : initiativeListItem.initiative,
       })),
     );
   };
 
   const roll = () => Math.floor(Math.random() * 20) + 1;
-
-  const parseNumberValue = (value: string, prevValue: number | null) => {
-    if (value === "") return null;
-
-    const numberValue = parseInt(value);
-    if (isNaN(numberValue)) return prevValue;
-    else return numberValue;
-  };
 
   const changeInitiativeListItemValue = (
     index: number,
@@ -254,40 +248,32 @@ const InternalInitiativeList = ({
             <DragDropProvider
               onDragEnd={(event) => {
                 setInitiativeListItems((prevState) =>
-                  move(prevState, event).map((inititiativeListItem, index) => ({
-                    ...inititiativeListItem,
+                  move(prevState, event).map((initiativeListItem, index) => ({
+                    ...initiativeListItem,
                     sortOrder: index + 1,
                   })),
                 );
               }}
             >
-              {initiativeListItems.map((inititiativeListItem, index) => (
+              {initiativeListItems.map((initiativeListItem, index) => (
                 <DraggableRow
                   gridColStyle={tableGridColStyle}
                   index={index}
-                  id={inititiativeListItem.id}
-                  key={inititiativeListItem.id}
+                  id={initiativeListItem.id}
+                  key={initiativeListItem.id}
                 >
                   <InitiativeInputCell
-                    active={inititiativeListItem.id === activeId}
-                    value={inititiativeListItem.initiative ?? ""}
-                    onChange={(e) =>
-                      changeInitiativeListItemValue(index, {
-                        initiative: parseNumberValue(
-                          e.target.value,
-                          initiativeListItems[index].initiative,
-                        ),
-                      })
+                    index={index}
+                    active={initiativeListItem.id === activeId}
+                    initiativeListItem={initiativeListItem}
+                    changeInitiativeListItemValue={
+                      changeInitiativeListItemValue
                     }
-                    onDiceClick={(e) =>
-                      changeInitiativeListItemValue(index, {
-                        initiative: roll(),
-                      })
-                    }
+                    roll={roll}
                   />
                   <InputCell
-                    active={inititiativeListItem.id === activeId}
-                    value={inititiativeListItem.name ?? ""}
+                    active={initiativeListItem.id === activeId}
+                    value={initiativeListItem.name ?? ""}
                     onChange={(e) =>
                       changeInitiativeListItemValue(index, {
                         name: e.target.value == "" ? null : e.target.value,
@@ -295,25 +281,25 @@ const InternalInitiativeList = ({
                     }
                   />
                   <InputCell
-                    active={inititiativeListItem.id === activeId}
-                    value={inititiativeListItem.hp ?? ""}
+                    active={initiativeListItem.id === activeId}
+                    value={initiativeListItem.hp ?? ""}
                     onChange={(e) =>
                       changeInitiativeListItemValue(index, {
                         hp: parseNumberValue(
                           e.target.value,
-                          initiativeListItems[index].hp,
+                          initiativeListItem.hp,
                         ),
                       })
                     }
                   />
                   <InputCell
-                    active={inititiativeListItem.id === activeId}
-                    value={inititiativeListItem.ac ?? ""}
+                    active={initiativeListItem.id === activeId}
+                    value={initiativeListItem.ac ?? ""}
                     onChange={(e) =>
                       changeInitiativeListItemValue(index, {
                         ac: parseNumberValue(
                           e.target.value,
-                          initiativeListItems[index].ac,
+                          initiativeListItem.ac,
                         ),
                       })
                     }
@@ -327,7 +313,7 @@ const InternalInitiativeList = ({
                         newState.splice(index, 1);
                         return newState;
                       });
-                      if (inititiativeListItem.id === activeId)
+                      if (initiativeListItem.id === activeId)
                         setNextItemActive();
                     }}
                   />
