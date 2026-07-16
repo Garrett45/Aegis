@@ -1,5 +1,5 @@
 import React from "react";
-import { cellStyles } from "~/shared/table/cells/styles";
+import { cellStyles } from "~/shared/components/table/cells/styles";
 
 interface CellProps {
   children?: React.ReactNode;

@@ -1,11 +1,14 @@
 import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
-import Row from "~/shared/table/rows/row";
-import HeadCell from "~/shared/table/cells/head-cell";
-import DeleteCell from "~/shared/table/cells/delete-cell";
-import Table from "~/shared/table/table";
-import Cell from "~/shared/table/cells/cell";
-import LinkCell from "~/shared/table/cells/link-cell";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/button/styles";
+import Row from "~/shared/components/table/rows/row";
+import HeadCell from "~/shared/components/table/cells/head-cell";
+import DeleteCell from "~/shared/components/table/cells/delete-cell";
+import Table from "~/shared/components/table/table";
+import Cell from "~/shared/components/table/cells/cell";
+import LinkCell from "~/shared/components/table/cells/link-cell";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 import { Link } from "react-router";
 import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";
 

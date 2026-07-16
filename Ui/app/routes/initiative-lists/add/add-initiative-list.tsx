@@ -1,5 +1,8 @@
 import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/button/styles";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";

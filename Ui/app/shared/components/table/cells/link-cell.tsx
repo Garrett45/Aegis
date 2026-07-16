@@ -1,5 +1,5 @@
 import React from "react";
-import { cellStyles } from "~/shared/table/cells/styles";
+import { cellStyles } from "~/shared/components/table/cells/styles";
 import { Link, type LinkProps } from "react-router";
 
 interface LinkCellProps extends Omit<LinkProps, "className"> {

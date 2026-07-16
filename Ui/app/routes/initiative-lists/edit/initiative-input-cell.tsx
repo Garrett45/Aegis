@@ -1,6 +1,6 @@
 import { FaDiceD20 } from "react-icons/fa";
 import React, { type InputHTMLAttributes, useState } from "react";
-import InputCell from "~/shared/table/cells/input-cell";
+import InputCell from "~/shared/components/table/cells/input-cell";
 
 interface InitiativeInputCell {
   active?: boolean;

@@ -1,5 +1,5 @@
 import React from "react";
-import { tableGap } from "~/shared/table/styles";
+import { tableGap } from "~/shared/components/table/styles";
 
 interface InitiativeTableProps {
   gridColStyle: string;

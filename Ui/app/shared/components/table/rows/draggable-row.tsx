@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import DragCell from "~/shared/table/cells/drag-cell";
+import DragCell from "~/shared/components/table/cells/drag-cell";
 import { useSortable } from "@dnd-kit/react/sortable";
-import { rowSharedStyles } from "~/shared/table/rows/styles";
+import { rowSharedStyles } from "~/shared/components/table/rows/styles";
 
 interface DraggableRowProps {
   id: string;

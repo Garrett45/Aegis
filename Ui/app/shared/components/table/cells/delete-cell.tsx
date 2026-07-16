@@ -1,4 +1,4 @@
-import { cellSharedStyles } from "~/shared/table/cells/styles";
+import { cellSharedStyles } from "~/shared/components/table/cells/styles";
 import React from "react";
 import { FaTrash } from "react-icons/fa";
 

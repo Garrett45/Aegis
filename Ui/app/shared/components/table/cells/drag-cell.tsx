@@ -1,4 +1,4 @@
-import { cellStyles } from "~/shared/table/cells/styles";
+import { cellStyles } from "~/shared/components/table/cells/styles";
 import { FaGripVertical } from "react-icons/fa";
 import React, { type RefObject } from "react";
 

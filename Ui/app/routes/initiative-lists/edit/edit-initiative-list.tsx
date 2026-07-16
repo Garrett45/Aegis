@@ -4,17 +4,21 @@ import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-input-cell";
-import DeleteCell from "~/shared/table/cells/delete-cell";
-import HeadCell from "~/shared/table/cells/head-cell";
-import InputCell from "~/shared/table/cells/input-cell";
-import DraggableRow from "~/shared/table/rows/draggable-row";
-import Row from "~/shared/table/rows/row";
-import Table from "~/shared/table/table";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/button/styles";
+import DeleteCell from "~/shared/components/table/cells/delete-cell";
+import HeadCell from "~/shared/components/table/cells/head-cell";
+import InputCell from "~/shared/components/table/cells/input-cell";
+import DraggableRow from "~/shared/components/table/rows/draggable-row";
+import Row from "~/shared/components/table/rows/row";
+import Table from "~/shared/components/table/table";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
+import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import type {
-  Route
-} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
-import type { InitiativeItemDto, InitiativeListDto } from "~/shared/api/initiative-lists";
+  InitiativeItemDto,
+  InitiativeListDto,
+} from "~/shared/api/initiative-lists";
 
 export function meta({}: Route.MetaArgs) {
   return [

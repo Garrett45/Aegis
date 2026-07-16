@@ -1,11 +1,22 @@
-import { isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import {
+  isRouteErrorResponse,
+  Link,
+  Links,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+} from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AuthProvider, useAuth } from "react-oidc-context";
 import { onSigninCallback, userManager } from "./auth-config.client";
-import { cellBackgroundColor } from "~/shared/table/cells/styles";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/button/styles";
+import { cellBackgroundColor } from "~/shared/components/table/cells/styles";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
