@@ -43,8 +43,8 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__AegisContext: User ID=sa;Password=${MSSQL_SA_PASSWORD};Initial Catalog=${MSSQL_DB_NAME};Server=db;trustServerCertificate=true
     depends_on:
-      db_migration:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
   
   ui:
     build:
@@ -58,8 +58,8 @@ services:
           target: /app/app
           initial_sync: true
     depends_on:
-      db_migration:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
 
 volumes:
   db-data:
