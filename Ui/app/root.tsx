@@ -1,22 +1,12 @@
-import {
-  isRouteErrorResponse,
-  Link,
-  Links,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from "react-router";
+import { isRouteErrorResponse, Link, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AuthProvider, useAuth } from "react-oidc-context";
 import { onSigninCallback, userManager } from "./auth-config.client";
 import { cellBackgroundColor } from "~/shared/components/table/cells/styles";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -30,6 +20,8 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+const queryClient = new QueryClient();
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -45,7 +37,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           userManager={userManager}
           onSigninCallback={onSigninCallback}
         >
-          {children}
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
         </AuthProvider>
         <ScrollRestoration />
         <Scripts />
@@ -64,7 +58,7 @@ export default function App() {
           <Link className={`text-3xl py-8 cursor-pointer`} to={"/"}>
             Aegis
           </Link>
-          <div className={"ml-auto"}>
+          <div className={"ml-auto flex gap-2"}>
             {auth.isAuthenticated ? (
               <button
                 onClick={() => auth.signoutRedirect()}
@@ -73,12 +67,26 @@ export default function App() {
                 Log Out
               </button>
             ) : (
-              <button
-                onClick={() => auth.signinRedirect()}
-                className={`${buttonSharedStyles} ${normalButtonColor}`}
-              >
-                Sign In
-              </button>
+              <>
+                <button
+                  onClick={() => auth.signinRedirect()}
+                  className={`${buttonSharedStyles} ${normalButtonColor}`}
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() =>
+                    auth.signinRedirect({
+                      extraQueryParams: {
+                        prompt: "create",
+                      },
+                    })
+                  }
+                  className={`${buttonSharedStyles} ${normalButtonColor}`}
+                >
+                  Sign Up
+                </button>
+              </>
             )}
           </div>
         </div>

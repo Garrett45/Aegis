@@ -11,6 +11,8 @@ import {
 } from "~/shared/components/button/styles";
 import { Link } from "react-router";
 import type { InitiativeListBasicResponse } from "~/shared/api/initiative-lists";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "react-oidc-context";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -22,21 +24,31 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const initiativeListResponse = await fetch(
-    `http://api:8080/api/InitiativeLists`,
-  );
-  return (await initiativeListResponse.json()) as InitiativeListBasicResponse[];
-}
+export default function Home() {
+  const auth = useAuth();
 
-export default function Home({
-  loaderData: initiativeLists,
-}: Route.ComponentProps) {
-  const deleteInitiativeList = async (id: number) => {
-    await fetch(`http://localhost:8080/api/InitiativeLists/${id}`, {
-      method: "DELETE",
-    });
-  };
+  const queryClient = useQueryClient();
+  const { data: initiativeLists } = useQuery({
+    queryKey: ["initiativeLists"],
+    queryFn: async () => {
+      const initiativeListResponse = await fetch(
+        `http://localhost:8080/api/InitiativeLists`,
+      );
+      return (await initiativeListResponse.json()) as InitiativeListBasicResponse[];
+    },
+  });
+
+  const { mutate: deleteInitiativeList } = useMutation({
+    mutationFn: async (id: number) => {
+      await fetch(`http://localhost:8080/api/InitiativeLists/${id}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: async () => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({ queryKey: ["initiativeLists"] });
+    },
+  });
 
   return (
     <main>
@@ -59,18 +71,14 @@ export default function Home({
             <HeadCell>Round</HeadCell>
             <HeadCell />
           </Row>
-          {initiativeLists.map((initiativeList) => (
+          {initiativeLists?.map((initiativeList) => (
             <Row key={initiativeList.id}>
               <LinkCell to={`/initiative-lists/${initiativeList.id}`}>
                 {initiativeList.name}
               </LinkCell>
               <Cell>{initiativeList.round}</Cell>
               <DeleteCell
-                onClick={() =>
-                  deleteInitiativeList(initiativeList.id).catch((error) =>
-                    console.error(error),
-                  )
-                }
+                onClick={() => deleteInitiativeList(initiativeList.id)}
               />
             </Row>
           ))}
