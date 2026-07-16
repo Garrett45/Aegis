@@ -12,7 +12,6 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import { AuthProvider, useAuth } from "react-oidc-context";
 import { onSigninCallback, userManager } from "./auth-config.client";
-import { cellBackgroundColor } from "~/shared/components/table/cells/styles";
 import {
   buttonSharedStyles,
   normalButtonColor,
@@ -64,8 +63,10 @@ export default function App() {
   const auth = useAuth();
 
   return (
-    <main>
-      <header className={`sticky top-0 w-full ${cellBackgroundColor} mb-4`}>
+    <div className={"min-h-screen flex flex-col"}>
+      <header
+        className={`sticky top-0 w-full bg-white mb-4 border-b-4 border-black z-1`}
+      >
         <div className={`mx-auto flex items-center ${appWidth}`}>
           <Link className={`text-3xl py-8 cursor-pointer`} to={"/"}>
             Aegis
@@ -110,7 +111,7 @@ export default function App() {
         </div>
       </header>
       <Outlet />
-    </main>
+    </div>
   );
 }
 

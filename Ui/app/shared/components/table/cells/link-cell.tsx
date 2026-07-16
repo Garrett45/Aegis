@@ -10,7 +10,7 @@ export default function LinkCell(props: LinkCellProps) {
   return (
     <Link
       {...props}
-      className={`${cellStyles(props.active)} cursor-pointer hover:underline decoration-sky-800 decoration-3`}
+      className={`${cellStyles(props.active)} cursor-pointer hover:underline decoration-main decoration-3`}
     />
   );
 }

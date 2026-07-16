@@ -8,7 +8,7 @@ interface InitiativeTableProps {
 
 export default function Table(props: InitiativeTableProps) {
   return (
-    <div className={`mx-auto grid ${props.gridColStyle} ${tableGap} bg-white`}>
+    <div className={`mx-auto grid ${props.gridColStyle} ${tableGap} bg-black`}>
       {props.children}
     </div>
   );

@@ -96,6 +96,56 @@ Based on this initiative tracker: [Initiative Tracker | DM Tools](https://dm.too
 
 Originally, was going to have presets. Then, I realized having two separate tables that represent the same thing results in a lot of duplication, and that I wasn't really going to use the flexibility provided by having those separate tables. Then, I thought of putting a flag on initiative lists to mark some as presets, but I realized there was duplication there, too. Finally, I realized if I was not going to make anything special with the presets, I ought to just have a duplication feature
 
+COlor scheme to use
+
+```css
+/* CSS HEX */
+--gunmetal: #393e41ff;
+--dust-grey: #d3d0cbff;
+--old-gold: #e2c044ff;
+--pine-blue: #587b7fff;
+--carbon-black: #1e2019ff;
+
+/* CSS HSL */
+--gunmetal: hsla(203, 7%, 24%, 1);
+--dust-grey: hsla(38, 8%, 81%, 1);
+--old-gold: hsla(47, 73%, 58%, 1);
+--pine-blue: hsla(186, 18%, 42%, 1);
+--carbon-black: hsla(77, 12%, 11%, 1);
+
+/* SCSS HEX */
+$gunmetal: #393e41ff;
+$dust-grey: #d3d0cbff;
+$old-gold: #e2c044ff;
+$pine-blue: #587b7fff;
+$carbon-black: #1e2019ff;
+
+/* SCSS HSL */
+$gunmetal: hsla(203, 7%, 24%, 1);
+$dust-grey: hsla(38, 8%, 81%, 1);
+$old-gold: hsla(47, 73%, 58%, 1);
+$pine-blue: hsla(186, 18%, 42%, 1);
+$carbon-black: hsla(77, 12%, 11%, 1);
+
+/* SCSS RGB */
+$gunmetal: rgba(57, 62, 65, 1);
+$dust-grey: rgba(211, 208, 203, 1);
+$old-gold: rgba(226, 192, 68, 1);
+$pine-blue: rgba(88, 123, 127, 1);
+$carbon-black: rgba(30, 32, 25, 1);
+
+/* SCSS Gradient */
+$gradient-top: linear-gradient(0deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-right: linear-gradient(90deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-bottom: linear-gradient(180deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-left: linear-gradient(270deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-top-right: linear-gradient(45deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-bottom-right: linear-gradient(135deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-top-left: linear-gradient(225deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-bottom-left: linear-gradient(315deg, #393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+$gradient-radial: radial-gradient(#393e41ff, #d3d0cbff, #e2c044ff, #587b7fff, #1e2019ff);
+```
+
 # Technical Decisions
 
 * React

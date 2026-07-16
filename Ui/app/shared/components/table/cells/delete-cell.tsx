@@ -9,7 +9,7 @@ interface DeleteCellProps {
 export default function DeleteCell(props: DeleteCellProps) {
   return (
     <div
-      className={`${cellSharedStyles} bg-red-800 flex items-center justify-center cursor-pointer`}
+      className={`${cellSharedStyles} bg-red-800 text-white flex items-center justify-center cursor-pointer`}
       onClick={props.onClick}
     >
       <FaTrash />

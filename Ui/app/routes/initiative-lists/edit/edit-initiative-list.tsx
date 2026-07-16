@@ -212,131 +212,135 @@ const InternalInitiativeList = ({
   };
 
   return (
-    <main>
-      <div className={`${appWidth} mx-auto`}>
-        <h1 className={"text-2xl mt-4 mb-2"}>
-          Encounter: {initiativeList.name}
-        </h1>
-        <div className={"mb-2 flex items-center"}>
-          <h1 className={"text-2xl"}>Round {round}</h1>
-          <div className={"flex items-center ml-auto gap-2"}>
-            <button
-              className={`${buttonSharedStyles} ${normalButtonColor}`}
-              onClick={rollAllEmpty}
-            >
-              Roll All Empty
-            </button>
-            <button
-              className={`${buttonSharedStyles} ${normalButtonColor}`}
-              onClick={sort}
-            >
-              Sort
-            </button>
-            <button
-              className={`${buttonSharedStyles} ${normalButtonColor}`}
-              onClick={() => save()}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-
-        <Table gridColStyle={tableGridColStyle}>
-          <Row>
-            <HeadCell />
-            <HeadCell>Initiative</HeadCell>
-            <HeadCell>Name</HeadCell>
-            <HeadCell>HP</HeadCell>
-            <HeadCell>AC</HeadCell>
-            <HeadCell />
-          </Row>
-          <DragDropProvider
-            onDragEnd={(event) => {
-              setInitiativeListItems((prevState) =>
-                move(prevState, event).map((inititiativeListItem, index) => ({
-                  ...inititiativeListItem,
-                  sortOrder: index + 1,
-                })),
-              );
-            }}
-          >
-            {initiativeListItems.map((inititiativeListItem, index) => (
-              <DraggableRow
-                gridColStyle={tableGridColStyle}
-                index={index}
-                id={inititiativeListItem.id}
-                key={inititiativeListItem.id}
+    <>
+      <main className={"mb-8"}>
+        <div className={`${appWidth} mx-auto`}>
+          <h1 className={"text-2xl mt-4 mb-2"}>
+            Encounter: {initiativeList.name}
+          </h1>
+          <div className={"mb-2 flex items-center"}>
+            <h1 className={"text-2xl"}>Round {round}</h1>
+            <div className={"flex items-center ml-auto gap-2"}>
+              <button
+                className={`${buttonSharedStyles} ${normalButtonColor}`}
+                onClick={rollAllEmpty}
               >
-                <InitiativeInputCell
-                  active={inititiativeListItem.id === activeId}
-                  value={inititiativeListItem.initiative ?? ""}
-                  onChange={(e) =>
-                    changeInitiativeListItemValue(index, {
-                      initiative: parseNumberValue(
-                        e.target.value,
-                        initiativeListItems[index].initiative,
-                      ),
-                    })
-                  }
-                  onDiceClick={(e) =>
-                    changeInitiativeListItemValue(index, {
-                      initiative: roll(),
-                    })
-                  }
-                />
-                <InputCell
-                  active={inititiativeListItem.id === activeId}
-                  value={inititiativeListItem.name ?? ""}
-                  onChange={(e) =>
-                    changeInitiativeListItemValue(index, {
-                      name: e.target.value == "" ? null : e.target.value,
-                    })
-                  }
-                />
-                <InputCell
-                  active={inititiativeListItem.id === activeId}
-                  value={inititiativeListItem.hp ?? ""}
-                  onChange={(e) =>
-                    changeInitiativeListItemValue(index, {
-                      hp: parseNumberValue(
-                        e.target.value,
-                        initiativeListItems[index].hp,
-                      ),
-                    })
-                  }
-                />
-                <InputCell
-                  active={inititiativeListItem.id === activeId}
-                  value={inititiativeListItem.ac ?? ""}
-                  onChange={(e) =>
-                    changeInitiativeListItemValue(index, {
-                      ac: parseNumberValue(
-                        e.target.value,
-                        initiativeListItems[index].ac,
-                      ),
-                    })
-                  }
-                />
-                <DeleteCell
-                  onClick={() => {
-                    if (initiativeListItems.length === 1) return;
+                Roll All Empty
+              </button>
+              <button
+                className={`${buttonSharedStyles} ${normalButtonColor}`}
+                onClick={sort}
+              >
+                Sort
+              </button>
+              <button
+                className={`${buttonSharedStyles} ${normalButtonColor}`}
+                onClick={() => save()}
+              >
+                Save
+              </button>
+            </div>
+          </div>
 
-                    setInitiativeListItems((prevState) => {
-                      const newState = [...prevState];
-                      newState.splice(index, 1);
-                      return newState;
-                    });
-                    if (inititiativeListItem.id === activeId)
-                      setNextItemActive();
-                  }}
-                />
-              </DraggableRow>
-            ))}
-          </DragDropProvider>
-        </Table>
-      </div>
+          <Table gridColStyle={tableGridColStyle}>
+            <Row>
+              <HeadCell />
+              <HeadCell>Initiative</HeadCell>
+              <HeadCell>Name</HeadCell>
+              <HeadCell>HP</HeadCell>
+              <HeadCell>AC</HeadCell>
+              <HeadCell />
+            </Row>
+            <DragDropProvider
+              onDragEnd={(event) => {
+                setInitiativeListItems((prevState) =>
+                  move(prevState, event).map((inititiativeListItem, index) => ({
+                    ...inititiativeListItem,
+                    sortOrder: index + 1,
+                  })),
+                );
+              }}
+            >
+              {initiativeListItems.map((inititiativeListItem, index) => (
+                <DraggableRow
+                  gridColStyle={tableGridColStyle}
+                  index={index}
+                  id={inititiativeListItem.id}
+                  key={inititiativeListItem.id}
+                >
+                  <InitiativeInputCell
+                    active={inititiativeListItem.id === activeId}
+                    value={inititiativeListItem.initiative ?? ""}
+                    onChange={(e) =>
+                      changeInitiativeListItemValue(index, {
+                        initiative: parseNumberValue(
+                          e.target.value,
+                          initiativeListItems[index].initiative,
+                        ),
+                      })
+                    }
+                    onDiceClick={(e) =>
+                      changeInitiativeListItemValue(index, {
+                        initiative: roll(),
+                      })
+                    }
+                  />
+                  <InputCell
+                    active={inititiativeListItem.id === activeId}
+                    value={inititiativeListItem.name ?? ""}
+                    onChange={(e) =>
+                      changeInitiativeListItemValue(index, {
+                        name: e.target.value == "" ? null : e.target.value,
+                      })
+                    }
+                  />
+                  <InputCell
+                    active={inititiativeListItem.id === activeId}
+                    value={inititiativeListItem.hp ?? ""}
+                    onChange={(e) =>
+                      changeInitiativeListItemValue(index, {
+                        hp: parseNumberValue(
+                          e.target.value,
+                          initiativeListItems[index].hp,
+                        ),
+                      })
+                    }
+                  />
+                  <InputCell
+                    active={inititiativeListItem.id === activeId}
+                    value={inititiativeListItem.ac ?? ""}
+                    onChange={(e) =>
+                      changeInitiativeListItemValue(index, {
+                        ac: parseNumberValue(
+                          e.target.value,
+                          initiativeListItems[index].ac,
+                        ),
+                      })
+                    }
+                  />
+                  <DeleteCell
+                    onClick={() => {
+                      if (initiativeListItems.length === 1) return;
+
+                      setInitiativeListItems((prevState) => {
+                        const newState = [...prevState];
+                        newState.splice(index, 1);
+                        return newState;
+                      });
+                      if (inititiativeListItem.id === activeId)
+                        setNextItemActive();
+                    }}
+                  />
+                </DraggableRow>
+              ))}
+            </DragDropProvider>
+          </Table>
+        </div>
+      </main>
       <footer
-        className={"fixed bottom-0 left-0 right-0 bg-purple-900 py-4 mt-8"}
+        className={
+          "sticky bottom-0 left-0 right-0 bg-white border-t-2 border-[#ddd] py-8 mt-auto"
+        }
       >
         <div
           className={
@@ -356,7 +360,7 @@ const InternalInitiativeList = ({
                 createEmptyInitiativeListItem(),
               ])
             }
-            className={`${buttonSharedStyles} bg-green-700`}
+            className={`${buttonSharedStyles} bg-[#86E265] hover:bg-[#6BDB43]`}
           >
             <FaPlus />
           </button>
@@ -368,6 +372,6 @@ const InternalInitiativeList = ({
           </button>
         </div>
       </footer>
-    </main>
+    </>
   );
 };
