@@ -17,6 +17,7 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
 
         return await context.InitiativeLists
             .Where(initiativeList => initiativeList.AccountId == currentAccount.Id)
+            .OrderByDescending(initiativeList => initiativeList.UpdatedAt)
             .Select(initiativeList => new InitiativeListBasicResponse(
                 initiativeList.Id,
                 initiativeList.AccountId,
@@ -88,6 +89,50 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
         ));
     }
 
+    [HttpPost("{id}/duplicate")]
+    public async Task<ActionResult<InitiativeListBasicResponse>> DuplicateInitiativeList(int id,
+        DuplicateInitiativeListRequest request)
+    {
+        var initiativeList = await context.InitiativeLists.FindAsync(id);
+        if (initiativeList is null) return BadRequest("Could not find initiative list");
+
+        var currentAccount = await getOrCreateAccount.Execute(User);
+        if (initiativeList.AccountId != currentAccount.Id) return Forbid();
+
+        var newInitiativeList = new InitiativeList
+        {
+            AccountId = initiativeList.Id,
+            Name = request.Name,
+            Round = initiativeList.Round
+        };
+        await context.InitiativeLists.AddAsync(newInitiativeList);
+        await context.SaveChangesAsync();
+
+        var initiativeListItems = context.InitiativeListItems
+            .Where(initiativeListItem => initiativeListItem.InitiativeListId == id)
+            .ToList();
+        foreach (var initiativeListItem in initiativeListItems)
+            await context.InitiativeListItems.AddAsync(new InitiativeListItem
+            {
+                InitiativeListId = newInitiativeList.Id,
+                Initiative = initiativeListItem.Initiative,
+                InitiativeBonus = initiativeListItem.InitiativeBonus,
+                Name = initiativeListItem.Name,
+                Hp = initiativeListItem.Hp,
+                Ac = initiativeListItem.Ac,
+                IsActive = initiativeListItem.IsActive,
+                SortOrder = initiativeListItem.SortOrder
+            });
+        await context.SaveChangesAsync();
+
+        return CreatedAtAction("GetInitiativeList", new { id = newInitiativeList.Id }, new InitiativeListBasicResponse(
+            newInitiativeList.Id,
+            newInitiativeList.AccountId,
+            newInitiativeList.Name,
+            newInitiativeList.Round
+        ));
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> PutInitiativeList(int id, InitiativeListDto initiativeListDto)
     {
@@ -102,6 +147,7 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
         initiativeList.AccountId = currentAccount.Id;
         initiativeList.Name = initiativeListDto.Name;
         initiativeList.Round = initiativeListDto.Round;
+        initiativeList.UpdatedAt = DateTime.UtcNow;
 
         // I could make this update only the required. In fact, the original design did just that.
         // However, with performance being so good, and the current design meaning updates almost

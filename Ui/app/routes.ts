@@ -11,6 +11,10 @@ export default [
   ...prefix("initiative-lists", [
     route("add", "routes/initiative-lists/add/add-initiative-list.tsx"),
     route(
+      "duplicate",
+      "routes/initiative-lists/duplicate/duplicate-initiative-list.tsx",
+    ),
+    route(
       ":initiativeListId",
       "routes/initiative-lists/edit/edit-initiative-list.tsx",
     ),

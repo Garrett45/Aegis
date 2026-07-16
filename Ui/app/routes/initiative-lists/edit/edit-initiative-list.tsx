@@ -167,7 +167,7 @@ const InternalInitiativeList = ({
     });
 
   const activeIndex = initiativeListItems.findIndex(
-    (inititiativeListItem) => inititiativeListItem.id === activeId,
+    (initiativeListItem) => initiativeListItem.id === activeId,
   );
 
   const setPrevItemActive = () => {

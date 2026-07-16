@@ -10,13 +10,12 @@ import {
   normalButtonColor,
 } from "~/shared/components/button/styles";
 import { Link } from "react-router";
-import {
-  allInitiativeListsQueryKey,
-  type InitiativeListBasicResponse,
-} from "~/shared/api/initiative-lists";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
+import {
+  useAllInitiativeLists,
+  useDeleteInitiativeList,
+} from "~/shared/api/initiative-lists";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -30,40 +29,8 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
   const auth = useAuth();
-
-  const queryClient = useQueryClient();
-  const { data: initiativeLists } = useQuery({
-    queryKey: allInitiativeListsQueryKey(auth),
-    queryFn: async () => {
-      const initiativeListResponse = await fetch(
-        `http://localhost:8080/api/InitiativeLists`,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.user?.access_token}`,
-          },
-        },
-      );
-      return (await initiativeListResponse.json()) as InitiativeListBasicResponse[];
-    },
-    enabled: auth.isAuthenticated,
-  });
-
-  const { mutate: deleteInitiativeList } = useMutation({
-    mutationFn: async (id: number) => {
-      await fetch(`http://localhost:8080/api/InitiativeLists/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${auth.user?.access_token}`,
-        },
-      });
-    },
-    onSuccess: async () => {
-      // Invalidate and refetch
-      await queryClient.invalidateQueries({
-        queryKey: allInitiativeListsQueryKey(auth),
-      });
-    },
-  });
+  const { data: initiativeLists } = useAllInitiativeLists();
+  const { mutate: deleteInitiativeList } = useDeleteInitiativeList();
 
   return (
     <main>
@@ -78,6 +45,12 @@ export default function Home() {
                   to={"/initiative-lists/add"}
                 >
                   Add
+                </Link>
+                <Link
+                  className={`${buttonSharedStyles} ${normalButtonColor}`}
+                  to={"/initiative-lists/duplicate"}
+                >
+                  Duplicate Existing
                 </Link>
               </div>
             </div>

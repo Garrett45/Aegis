@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   allInitiativeListsQueryKey,
+  type CreateInitiativeListRequest,
   type InitiativeListBasicResponse,
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,10 +22,6 @@ export function meta({}: Route.MetaArgs) {
       content: "Create a new initiative list to use",
     },
   ];
-}
-
-interface CreateInitiativeListRequest {
-  name: string;
 }
 
 export default function AddInitiativeList() {
