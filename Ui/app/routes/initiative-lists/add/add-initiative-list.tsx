@@ -12,7 +12,6 @@ import {
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
-import { appWidth } from "~/shared/components/layout/styles";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -60,7 +59,7 @@ export default function AddInitiativeList() {
 
   return (
     <main>
-      <div className={`${appWidth} mx-auto`}>
+      <div className={`max-w-100 border-2 border-[#ddd] mx-auto px-8 py-4`}>
         <h1 className={"text-2xl mt-4 mb-2"}>Add Initiative List</h1>
         <form
           onSubmit={(e) => {
@@ -71,7 +70,9 @@ export default function AddInitiativeList() {
           <label className={"block text-xl"}>
             Name
             <input
-              className={"block text-xl px-4 py-2 bg-white text-black mt-2"}
+              className={
+                "block text-xl px-4 py-2 bg-white text-black mt-2 border-2 border-black leading-none w-full"
+              }
               value={addFormValues.name}
               onChange={(e) =>
                 setAddFormValues({ ...addFormValues, name: e.target.value })

@@ -101,7 +101,7 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
 
         var newInitiativeList = new InitiativeList
         {
-            AccountId = initiativeList.Id,
+            AccountId = currentAccount.Id,
             Name = request.Name,
             Round = initiativeList.Round
         };

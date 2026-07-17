@@ -6,7 +6,6 @@ import {
   useAllInitiativeLists,
   useDuplicateInitiativeList
 } from "~/shared/api/initiative-lists";
-import { appWidth } from "~/shared/components/layout/styles";
 import type {
   Route
 } from "../../../../.react-router/types/app/routes/initiative-lists/duplicate/+types/duplicate-initiative-list";
@@ -36,7 +35,7 @@ export default function DuplicateInitiativeList() {
 
   return (
     <main>
-      <div className={`${appWidth} mx-auto`}>
+      <div className={`max-w-100 border-2 border-[#ddd] mx-auto px-8 py-4`}>
         <h1 className={"text-2xl mt-4 mb-2"}>Duplicate Initiative List</h1>
         <form
           onSubmit={(e) => {
@@ -47,7 +46,9 @@ export default function DuplicateInitiativeList() {
           <label className={"block text-xl"}>
             Initiative List to Duplicate
             <select
-              className={"block text-xl px-4 py-2 bg-white text-black mt-2"}
+              className={
+                "block text-xl px-4 py-2 bg-white text-black mt-2 border-2 border-black w-full"
+              }
               value={duplicateFormValues.id}
               onChange={(e) =>
                 setDuplicateFormValues({
@@ -69,7 +70,9 @@ export default function DuplicateInitiativeList() {
           <label className={"block text-xl mt-4"}>
             Name
             <input
-              className={"block text-xl px-4 py-2 bg-white text-black mt-2"}
+              className={
+                "block text-xl px-4 py-2 bg-white text-black mt-2 border-2 border-black leading-none w-full"
+              }
               value={duplicateFormValues.name}
               onChange={(e) =>
                 setDuplicateFormValues({
