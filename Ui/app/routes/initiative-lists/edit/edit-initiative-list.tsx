@@ -10,20 +10,20 @@ import InputCell from "~/shared/components/table/cells/input-cell";
 import DraggableRow from "~/shared/components/table/rows/draggable-row";
 import Row from "~/shared/components/table/rows/row";
 import Table from "~/shared/components/table/table";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
-import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
+import type {
+  Route
+} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import {
   allInitiativeListsQueryKey,
   type InitiativeListDto,
-  type InitiativeListItemDto,
+  type InitiativeListItemDto
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
 import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
+import { toast } from "react-toastify";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -89,7 +89,7 @@ const InternalInitiativeList = ({
   });
 
   const queryClient = useQueryClient();
-  const { mutate: save } = useMutation({
+  const { mutate: save, isPending: isSavePending } = useMutation({
     mutationFn: async () => {
       await fetch(
         `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
@@ -115,6 +115,10 @@ const InternalInitiativeList = ({
       await queryClient.invalidateQueries({
         queryKey: allInitiativeListsQueryKey(auth),
       });
+      toast.success("Content saved!");
+    },
+    onError: async () => {
+      toast.error("An error occurred while saving initiative list");
     },
   });
 
@@ -230,6 +234,7 @@ const InternalInitiativeList = ({
               <button
                 className={`${buttonSharedStyles} ${normalButtonColor}`}
                 onClick={() => save()}
+                disabled={isSavePending}
               >
                 Save
               </button>

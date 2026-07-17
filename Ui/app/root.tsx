@@ -18,6 +18,7 @@ import {
 } from "~/shared/components/button/styles";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { appWidth } from "~/shared/components/layout/styles";
+import { Bounce, ToastContainer } from "react-toastify";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -49,6 +50,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
           onSigninCallback={onSigninCallback}
         >
           <QueryClientProvider client={queryClient}>
+            <ToastContainer
+              position="top-center"
+              autoClose={5000}
+              hideProgressBar={false}
+              closeOnClick={false}
+              pauseOnHover
+              draggable
+              theme={"light"}
+              transition={Bounce}
+            />
             {children}
           </QueryClientProvider>
         </AuthProvider>
