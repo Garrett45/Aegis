@@ -77,6 +77,7 @@ const InternalInitiativeList = ({
   >(initiativeList.initiativeListItems);
   const [activeId, setActiveId] = useState(initiativeList.activeId);
   const [round, setRound] = useState(initiativeList.round);
+  const [name, setName] = useState(initiativeList.name);
 
   const createEmptyInitiativeListItem = () => ({
     id: uuidv4(),
@@ -102,7 +103,7 @@ const InternalInitiativeList = ({
           body: JSON.stringify({
             id: initiativeList.id,
             accountId: initiativeList.accountId,
-            name: initiativeList.name,
+            name,
             round,
             activeId,
             initiativeListItems: initiativeListItems,
@@ -214,7 +215,8 @@ const InternalInitiativeList = ({
       <main className={"mb-8"}>
         <div className={`${appWidth} mx-auto`}>
           <h1 className={"text-2xl mt-4 mb-2"}>
-            Encounter: {initiativeList.name}
+            Encounter:{" "}
+            <input value={name} onChange={(e) => setName(e.target.value)} />
           </h1>
           <div className={"mb-2 flex items-center"}>
             <h1 className={"text-2xl"}>Round {round}</h1>
