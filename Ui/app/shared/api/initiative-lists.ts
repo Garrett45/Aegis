@@ -1,5 +1,6 @@
 import { type AuthContextProps, useAuth } from "react-oidc-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export interface CreateInitiativeListRequest {
   name: string;
@@ -58,6 +59,57 @@ export function useAllInitiativeLists() {
       return (await initiativeListResponse.json()) as InitiativeListBasicResponse[];
     },
     enabled: auth.isAuthenticated,
+  });
+}
+
+export function useInitiativeList(initiativeListId: string) {
+  const auth = useAuth();
+
+  return useQuery({
+    queryKey: ["initiativeList", initiativeListId],
+    queryFn: async () => {
+      const initiativeListResponse = await fetch(
+        `http://localhost:8080/api/InitiativeLists/${initiativeListId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+          },
+        },
+      );
+      return (await initiativeListResponse.json()) as InitiativeListDto;
+    },
+    enabled: auth.isAuthenticated,
+  });
+}
+
+export function useUpdateInitiativeList() {
+  const auth = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (initiativeList: InitiativeListDto) => {
+      await fetch(
+        `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(initiativeList),
+        },
+      );
+    },
+    onSuccess: async () => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({
+        queryKey: allInitiativeListsQueryKey(auth),
+      });
+      toast.success("Content saved!");
+    },
+    onError: async () => {
+      toast.error("An error occurred while saving initiative list");
+    },
   });
 }
 

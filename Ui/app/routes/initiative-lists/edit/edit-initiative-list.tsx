@@ -15,15 +15,14 @@ import type {
   Route
 } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import {
-  allInitiativeListsQueryKey,
   type InitiativeListDto,
-  type InitiativeListItemDto
+  type InitiativeListItemDto,
+  useInitiativeList,
+  useUpdateInitiativeList
 } from "~/shared/api/initiative-lists";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
 import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
-import { toast } from "react-toastify";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -38,26 +37,9 @@ export function meta({}: Route.MetaArgs) {
 const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
 
 export default function EditInitiativeList({ params }: Route.ComponentProps) {
-  const auth = useAuth();
-  const {
-    data: initiativeList,
-    isPending: initiativeListPending,
-    isFetchedAfterMount,
-  } = useQuery({
-    queryKey: ["initiativeList", params.initiativeListId],
-    queryFn: async () => {
-      const initiativeListResponse = await fetch(
-        `http://localhost:8080/api/InitiativeLists/${params.initiativeListId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.user?.access_token}`,
-          },
-        },
-      );
-      return (await initiativeListResponse.json()) as InitiativeListDto;
-    },
-    enabled: auth.isAuthenticated,
-  });
+  const { data: initiativeList, isFetchedAfterMount } = useInitiativeList(
+    params.initiativeListId,
+  );
 
   if (typeof initiativeList === "undefined" || !isFetchedAfterMount)
     return undefined;
@@ -89,39 +71,7 @@ const InternalInitiativeList = ({
     sortOrder: initiativeListItems.length + 1,
   });
 
-  const queryClient = useQueryClient();
-  const { mutate: save, isPending: isSavePending } = useMutation({
-    mutationFn: async () => {
-      await fetch(
-        `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${auth.user?.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: initiativeList.id,
-            accountId: initiativeList.accountId,
-            name,
-            round,
-            activeId,
-            initiativeListItems: initiativeListItems,
-          } as InitiativeListDto),
-        },
-      );
-    },
-    onSuccess: async () => {
-      // Invalidate and refetch
-      await queryClient.invalidateQueries({
-        queryKey: allInitiativeListsQueryKey(auth),
-      });
-      toast.success("Content saved!");
-    },
-    onError: async () => {
-      toast.error("An error occurred while saving initiative list");
-    },
-  });
+  const { mutate: save, isPending: isSavePending } = useUpdateInitiativeList();
 
   const sort = () => {
     setInitiativeListItems((prevState) => {
@@ -235,7 +185,16 @@ const InternalInitiativeList = ({
               </button>
               <button
                 className={`${buttonSharedStyles} ${normalButtonColor}`}
-                onClick={() => save()}
+                onClick={() =>
+                  save({
+                    id: initiativeList.id,
+                    accountId: initiativeList.accountId,
+                    name,
+                    round,
+                    activeId,
+                    initiativeListItems: initiativeListItems,
+                  })
+                }
                 disabled={isSavePending}
               >
                 Save
