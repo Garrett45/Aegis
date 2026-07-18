@@ -103,6 +103,38 @@ public class InitiativeListsEndpointTests
     }
 
     [Test]
+    public async Task Duplicate_EndpointSuccessfullyDuplicates()
+    {
+        using var scope = ApiSetUpFixture.Factory.Services.CreateScope();
+        var context = ApiSetUpFixture.Factory.GetDbContext(scope);
+
+        var getOrCreateAccount = new GetOrCreateAccount(context);
+        var account = await getOrCreateAccount.Execute(BasicTestUserAuthHandler.GetUser());
+
+        var initiativeList = new InitiativeListFaker(account.Id).Generate();
+        await context.InitiativeLists.AddAsync(initiativeList);
+        await context.SaveChangesAsync();
+
+        var client = ApiSetUpFixture.Factory.WithBasicTestUserAuthenticated().CreateClient();
+        var faker = new Faker();
+        var duplicateInitiativeListRequest = new DuplicateInitiativeListRequest(faker.Hacker.Phrase());
+        var response = await client.PostAsJsonAsync($"/api/InitiativeLists/{initiativeList.Id}/duplicate",
+            duplicateInitiativeListRequest);
+
+        var returnedInitiativeList =
+            await response.Content.ReadFromJsonAsync<InitiativeListBasicResponse>();
+        var duplicateInitiativeListFromDb = await context.InitiativeLists.FindAsync(returnedInitiativeList?.Id);
+
+        response.EnsureSuccessStatusCode();
+        Assert.That(returnedInitiativeList, Is.Not.Null);
+        Assert.That(initiativeList, Is.Not.Null);
+        Assert.That(duplicateInitiativeListFromDb, Is.Not.Null);
+        Assert.That(duplicateInitiativeListFromDb.Id, Is.Not.EqualTo(initiativeList.Id));
+        Assert.That(duplicateInitiativeListFromDb.Name, Is.EqualTo(duplicateInitiativeListRequest.Name));
+        Assert.That(duplicateInitiativeListFromDb.Round, Is.EqualTo(initiativeList.Round));
+    }
+
+    [Test]
     public async Task Update_EndpointSuccessfullyUpdatesList()
     {
         using var scope = ApiSetUpFixture.Factory.Services.CreateScope();
