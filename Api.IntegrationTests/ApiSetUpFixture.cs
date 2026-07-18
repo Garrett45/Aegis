@@ -1,4 +1,4 @@
-﻿using Api.IntegrationTests.TestWebApplication;
+﻿using Api.IntegrationTests.Shared.TestWebApplication;
 using DotNet.Testcontainers.Builders;
 using Microsoft.Data.SqlClient;
 using Testcontainers.MsSql;

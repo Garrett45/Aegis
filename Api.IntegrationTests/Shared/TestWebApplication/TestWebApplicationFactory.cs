@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Api.IntegrationTests.TestWebApplication;
+namespace Api.IntegrationTests.Shared.TestWebApplication;
 
 public class TestWebApplicationFactory<TProgram>(string dbConnectionString)
     : WebApplicationFactory<TProgram> where TProgram : class
@@ -13,13 +13,16 @@ public class TestWebApplicationFactory<TProgram>(string dbConnectionString)
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         Environment.SetEnvironmentVariable("ConnectionStrings__AegisContext", dbConnectionString);
-
         builder.UseEnvironment("Development");
-        builder.ConfigureTestServices(services =>
+    }
+
+    public WebApplicationFactory<TProgram> WithBasicTestUserAuthenticated()
+    {
+        return WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
         {
             services.AddAuthentication("TestScheme")
-                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("TestScheme", options => { });
-        });
+                .AddScheme<AuthenticationSchemeOptions, BasicTestUserAuthHandler>("TestScheme", options => { });
+        }));
     }
 
     public AegisContext GetDbContext(IServiceScope scope)
