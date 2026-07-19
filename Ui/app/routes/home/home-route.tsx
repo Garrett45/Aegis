@@ -19,10 +19,11 @@ import {
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "HomeRoute" },
+    { title: "Aegis" },
     {
       name: "description",
-      content: "This is the home page of all the DM tools under Athena",
+      content:
+        "This is the home page of the initiative tracker Aegis. Here, you can view all your initiative lists",
     },
   ];
 }

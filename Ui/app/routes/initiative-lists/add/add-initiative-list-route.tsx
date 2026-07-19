@@ -15,10 +15,10 @@ import { useAuth } from "react-oidc-context";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Add Initiative List" },
+    { title: "Add Initiative List | Aegis" },
     {
       name: "description",
-      content: "Create a new initiative list to use",
+      content: "This page allows you to create a new initiative list",
     },
   ];
 }

@@ -16,7 +16,8 @@ export function meta({}: Route.MetaArgs) {
     { title: "Duplicate Initiative List" },
     {
       name: "description",
-      content: "Duplicate an initiative list",
+      content:
+        "This page allows you to duplicate one of your already existing initiative lists",
     },
   ];
 }

@@ -14,7 +14,8 @@ export function meta({}: Route.MetaArgs) {
     { title: "Initiative List" },
     {
       name: "description",
-      content: "This is a page to modify an initiative list",
+      content:
+        "This page is where you track your initiative. Any changes you make to the initiative list can be saved for later use",
     },
   ];
 }
