@@ -58,7 +58,7 @@ export default function HomeRoute() {
 
             <Table
               gridColStyle={`grid-cols-[3fr_1fr_50px]`}
-              minWidthStyle={"min-w-100"}
+              minWidthStyle={"min-w-120"}
             >
               <Row>
                 <HeadCell>Name</HeadCell>
