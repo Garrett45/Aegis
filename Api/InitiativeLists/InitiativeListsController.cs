@@ -12,7 +12,9 @@ namespace Api.InitiativeLists;
 public class InitiativeListsController(
     AegisContext context,
     GetOrCreateAccount getOrCreateAccount,
-    DuplicateInitiativeListCommand duplicateInitiativeListCommand) : ControllerBase
+    InitiativeListMapper initiativeListMapper,
+    DuplicateInitiativeListCommand duplicateInitiativeListCommand,
+    UpdateInitiativeListCommand updateInitiativeListCommand) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<InitiativeListBasicResponse>>> GetInitiativeList()
@@ -31,32 +33,6 @@ public class InitiativeListsController(
             .ToListAsync();
     }
 
-    private async Task<InitiativeListDto> MapInitiativeListToDto(InitiativeList initiativeList)
-    {
-        var initiativeListItems = await context.InitiativeListItems
-            .Where(initiativeListItem => initiativeListItem.InitiativeListId == initiativeList.Id)
-            .Select(initiativeListItem => new InitiativeListItemDto(
-                initiativeListItem.Id.ToString(),
-                initiativeListItem.Initiative,
-                initiativeListItem.InitiativeBonus,
-                initiativeListItem.Name,
-                initiativeListItem.Hp,
-                initiativeListItem.Ac,
-                initiativeListItem.SortOrder
-            ))
-            .ToListAsync();
-        var activeInitiativeItem = await context.InitiativeListItems
-            .FirstOrDefaultAsync(initiativeListItem =>
-                initiativeListItem.InitiativeListId == initiativeList.Id && initiativeListItem.IsActive);
-
-        return new InitiativeListDto(
-            initiativeList.Id,
-            initiativeList.Name,
-            initiativeList.Round,
-            activeInitiativeItem?.Id.ToString() ?? "",
-            initiativeListItems
-        );
-    }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<InitiativeList>> GetInitiativeList(int id)
@@ -67,7 +43,7 @@ public class InitiativeListsController(
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        return Ok(await MapInitiativeListToDto(initiativeList));
+        return Ok(await initiativeListMapper.MapInitiativeListToDto(initiativeList));
     }
 
     [HttpPost]
@@ -108,7 +84,7 @@ public class InitiativeListsController(
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutInitiativeList(int id, InitiativeListDto initiativeListDto)
+    public async Task<IActionResult> UpdateInitiativeList(int id, InitiativeListDto initiativeListDto)
     {
         if (id != initiativeListDto.Id) return BadRequest("Initiative list ID does not match ID in URL");
 
@@ -118,37 +94,7 @@ public class InitiativeListsController(
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        initiativeList.AccountId = currentAccount.Id;
-        initiativeList.Name = initiativeListDto.Name;
-        initiativeList.Round = initiativeListDto.Round;
-        initiativeList.UpdatedAt = DateTime.UtcNow;
-
-        // I could make this update only the required. In fact, the original design did just that.
-        // However, with performance being so good, and the current design meaning updates almost
-        // never happen, it kind of just makes more sense to clear everything and re-add it,
-        // particularly since we aren't even using this data except on initial page load, and
-        // since this significantly simplifies the code
-        var currentInitiativeListItems = context.InitiativeListItems
-            .Where(initiativeListItem => initiativeListItem.InitiativeListId == id)
-            .ToList();
-        foreach (var initiativeListItem in currentInitiativeListItems)
-            context.InitiativeListItems.Remove(initiativeListItem);
-
-        foreach (var initiativeListItemDto in initiativeListDto.InitiativeListItems)
-            await context.InitiativeListItems.AddAsync(new InitiativeListItem
-            {
-                InitiativeListId = id,
-                Initiative = initiativeListItemDto.Initiative,
-                InitiativeBonus = initiativeListItemDto.InitiativeBonus,
-                Name = initiativeListItemDto.Name,
-                Hp = initiativeListItemDto.Hp,
-                Ac = initiativeListItemDto.Ac,
-                IsActive = initiativeListDto.ActiveId == initiativeListItemDto.Id,
-                SortOrder = initiativeListItemDto.SortOrder
-            });
-
-        await context.SaveChangesAsync();
-        return Ok(await MapInitiativeListToDto(initiativeList));
+        return Ok(await updateInitiativeListCommand.Execute(initiativeList, initiativeListDto, currentAccount));
     }
 
     [HttpDelete("{id}")]
