@@ -12,7 +12,8 @@ import {
 import { appWidth } from "~/shared/components/layout/styles";
 import InitiativeListFooter from "~/routes/initiative-lists/edit/initiative-list-footer";
 import InitiativeListTable from "~/routes/initiative-lists/edit/initiative-list-table";
-import { roll } from "~/shared/services/random";
+import SortButton from "~/routes/initiative-lists/edit/sort-button";
+import RollAllEmptyButton from "~/routes/initiative-lists/edit/roll-all-empty-button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -49,33 +50,6 @@ const InternalInitiativeList = ({
   const [name, setName] = useState(initiativeList.name);
 
   const { mutate: save, isPending: isSavePending } = useUpdateInitiativeList();
-
-  const sort = () => {
-    setInitiativeListItems((prevState) => {
-      const newState = [...prevState];
-      newState.sort((a, b) => {
-        const sortValue = (b.initiative ?? 0) - (a.initiative ?? 0);
-        if (sortValue !== 0) return sortValue;
-        return (a.name ?? "").localeCompare(b.name ?? "");
-      });
-      return newState.map((initiativeListItem, index) => ({
-        ...initiativeListItem,
-        sortOrder: index + 1,
-      }));
-    });
-  };
-
-  const rollAllEmpty = () => {
-    setInitiativeListItems((prevState) =>
-      prevState.map((initiativeListItem) => ({
-        ...initiativeListItem,
-        initiative:
-          initiativeListItem.initiative == null
-            ? roll() + (initiativeListItem.initiativeBonus ?? 0)
-            : initiativeListItem.initiative,
-      })),
-    );
-  };
 
   const activeIndex = initiativeListItems.findIndex(
     (initiativeListItem) => initiativeListItem.id === activeId,
@@ -133,18 +107,10 @@ const InternalInitiativeList = ({
           <div className={"mb-2 flex items-center"}>
             <h1 className={"text-2xl"}>Round {round}</h1>
             <div className={"flex items-center ml-auto gap-2"}>
-              <button
-                className={`${buttonSharedStyles} ${normalButtonColor}`}
-                onClick={rollAllEmpty}
-              >
-                Roll All Empty
-              </button>
-              <button
-                className={`${buttonSharedStyles} ${normalButtonColor}`}
-                onClick={sort}
-              >
-                Sort
-              </button>
+              <RollAllEmptyButton
+                setInitiativeListItems={setInitiativeListItems}
+              />
+              <SortButton setInitiativeListItems={setInitiativeListItems} />
               <button
                 className={`${buttonSharedStyles} ${normalButtonColor}`}
                 onClick={() =>
