@@ -4,7 +4,8 @@ import { v4 as uuidv4 } from "uuid";
 import {
   findNextActiveInitiativeListItemPosition,
   findPrevActiveInitiativeListItemPosition,
-  sortInitiativeListItems,
+  rollAllEmptyInitiativeListItems,
+  sortInitiativeListItems
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 
 const testInitiativeListItems: InitiativeListItemDto[] = [
@@ -316,5 +317,92 @@ describe("sortInitiativeListItems", () => {
         sortedInitiativeListItems[1].id,
       ),
     ).toBe(-1);
+  });
+});
+
+describe("rollAllEmptyInitiativeListItems", () => {
+  test("if all items have an initiative, leave items untouched", () => {
+    const rolledInitiativeListItems = rollAllEmptyInitiativeListItems(
+      testInitiativeListItems,
+    );
+    rolledInitiativeListItems.forEach((initiativeListItem, index) =>
+      expect(initiativeListItem).toMatchObject(
+        rolledInitiativeListItems[index],
+      ),
+    );
+  });
+
+  test("if all initiatives empty, roll initiative for each. leave untouched otherwise", () => {
+    const initiativeListItemsToRoll: InitiativeListItemDto[] = [
+      {
+        id: uuidv4(),
+        initiative: null,
+        initiativeBonus: 3,
+        name: "Nippsy",
+        hp: 12,
+        ac: 8,
+        sortOrder: 3,
+      },
+      {
+        id: uuidv4(),
+        initiative: null,
+        initiativeBonus: 1,
+        name: "Ardyn",
+        hp: 25,
+        ac: 15,
+        sortOrder: 1,
+      },
+    ];
+
+    const rolledInitiativeListItems = rollAllEmptyInitiativeListItems(
+      initiativeListItemsToRoll,
+    );
+    rolledInitiativeListItems.forEach((rolledInitiativeListItem, index) => {
+      expect(rolledInitiativeListItem.initiative).not.toBeNull();
+      const { initiative, ...initiativeListItemToRollWithoutInitiative } =
+        initiativeListItemsToRoll[index];
+      expect(rolledInitiativeListItem).toMatchObject(
+        initiativeListItemToRollWithoutInitiative,
+      );
+    });
+  });
+
+  test("if some initiatives empty, roll initiative for each empty. leave untouched otherwise", () => {
+    const initiativeListItemsToRoll: InitiativeListItemDto[] = [
+      {
+        id: uuidv4(),
+        initiative: 10,
+        initiativeBonus: 3,
+        name: "Nippsy",
+        hp: 12,
+        ac: 8,
+        sortOrder: 3,
+      },
+      {
+        id: uuidv4(),
+        initiative: null,
+        initiativeBonus: 1,
+        name: "Ardyn",
+        hp: 25,
+        ac: 15,
+        sortOrder: 1,
+      },
+    ];
+
+    const rolledInitiativeListItems = rollAllEmptyInitiativeListItems(
+      initiativeListItemsToRoll,
+    );
+    rolledInitiativeListItems.forEach((rolledInitiativeListItem, index) => {
+      expect(rolledInitiativeListItem.initiative).not.toBeNull();
+      const { initiative, ...initiativeListItemToRollWithoutInitiative } =
+        initiativeListItemsToRoll[index];
+
+      if (initiative != null)
+        expect(rolledInitiativeListItem.initiative).toBe(initiative);
+
+      expect(rolledInitiativeListItem).toMatchObject(
+        initiativeListItemToRollWithoutInitiative,
+      );
+    });
   });
 });

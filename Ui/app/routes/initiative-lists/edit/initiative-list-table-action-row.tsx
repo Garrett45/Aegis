@@ -1,4 +1,3 @@
-import RollAllEmptyButton from "~/routes/initiative-lists/edit/roll-all-empty-button";
 import {
   type InitiativeListDto,
   type InitiativeListItemDto,
@@ -6,6 +5,7 @@ import {
 } from "~/shared/api/initiative-lists";
 import {
   type InitiativeListItems,
+  rollAllEmptyInitiativeListItems,
   sortInitiativeListItems
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 import React, { type SetStateAction } from "react";
@@ -36,7 +36,15 @@ export default function InitiativeListTableActionRow({
         Round {activeInitiativeListItemPosition.round}
       </h1>
       <div className={"flex items-center ml-auto gap-2"}>
-        <RollAllEmptyButton setInitiativeListItems={setInitiativeListItems} />
+        <MainButton
+          onClick={() =>
+            setInitiativeListItems((prevState) =>
+              rollAllEmptyInitiativeListItems(prevState),
+            )
+          }
+        >
+          Roll All Empty
+        </MainButton>
         <MainButton
           onClick={() =>
             setInitiativeListItems((prevState) =>

@@ -1,4 +1,5 @@
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
+import { roll } from "~/shared/services/random";
 
 export interface InitiativeListItems {
   activeId: string;
@@ -95,5 +96,17 @@ export const sortInitiativeListItems = (
   return newInitiativeListItems.map((initiativeListItem, index) => ({
     ...initiativeListItem,
     sortOrder: index + 1,
+  }));
+};
+
+export const rollAllEmptyInitiativeListItems = (
+  initiativeListItems: InitiativeListItemDto[],
+) => {
+  return initiativeListItems.map((initiativeListItem) => ({
+    ...initiativeListItem,
+    initiative:
+      initiativeListItem.initiative == null
+        ? roll() + (initiativeListItem.initiativeBonus ?? 0)
+        : initiativeListItem.initiative,
   }));
 };
