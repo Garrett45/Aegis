@@ -6,21 +6,26 @@ import { FaPlus } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import React, { type SetStateAction } from "react";
+import {
+  type ActiveInitiativeListItemPosition,
+  findNextActiveInitiativeListItemPosition,
+  findPrevActiveInitiativeListItemPosition,
+} from "~/routes/initiative-lists/edit/active-initiative-list-item-position/active-initiative-list-item-position";
 
 interface InitiativeListFooterProps {
-  setPrevItemActive: () => void;
-  setNextItemActive: () => void;
   initiativeListItems: InitiativeListItemDto[];
   setInitiativeListItems: React.Dispatch<
     SetStateAction<InitiativeListItemDto[]>
   >;
+  setActiveInitiativeListItemPosition: React.Dispatch<
+    SetStateAction<ActiveInitiativeListItemPosition>
+  >;
 }
 
 export default function InitiativeListFooter({
-  setPrevItemActive,
-  setNextItemActive,
   initiativeListItems,
   setInitiativeListItems,
+  setActiveInitiativeListItemPosition,
 }: InitiativeListFooterProps) {
   const createEmptyInitiativeListItem = () => ({
     id: uuidv4(),
@@ -31,6 +36,18 @@ export default function InitiativeListFooter({
     ac: null,
     sortOrder: initiativeListItems.length + 1,
   });
+
+  const setPrevItemActive = () => {
+    setActiveInitiativeListItemPosition((prevState) =>
+      findPrevActiveInitiativeListItemPosition(initiativeListItems, prevState),
+    );
+  };
+
+  const setNextItemActive = () => {
+    setActiveInitiativeListItemPosition((prevState) =>
+      findNextActiveInitiativeListItemPosition(initiativeListItems, prevState),
+    );
+  };
 
   return (
     <footer

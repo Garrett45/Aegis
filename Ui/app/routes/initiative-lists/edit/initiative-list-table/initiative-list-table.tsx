@@ -4,30 +4,36 @@ import HeadCell from "~/shared/components/table/cells/head-cell";
 import { DragDropProvider } from "@dnd-kit/react";
 import DraggableRow from "~/shared/components/table/rows/draggable-row";
 import { move } from "@dnd-kit/helpers";
-import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-input-cell";
+import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-list-table/initiative-input-cell";
 import InputCell from "~/shared/components/table/cells/input-cell";
 import DeleteCell from "~/shared/components/table/cells/delete-cell";
 import { toast } from "react-toastify";
 import { parseNumberValue } from "~/shared/services/parsers";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import React, { type SetStateAction } from "react";
+import {
+  type ActiveInitiativeListItemPosition,
+  findNextActiveInitiativeListItemPosition,
+} from "~/routes/initiative-lists/edit/active-initiative-list-item-position/active-initiative-list-item-position";
 
 interface InitiativeListTableProps {
-  setNextItemActive: () => void;
   initiativeListItems: InitiativeListItemDto[];
   setInitiativeListItems: React.Dispatch<
     SetStateAction<InitiativeListItemDto[]>
   >;
-  activeId: string;
+  activeInitiativeListItemPosition: ActiveInitiativeListItemPosition;
+  setActiveInitiativeListItemPosition: React.Dispatch<
+    SetStateAction<ActiveInitiativeListItemPosition>
+  >;
 }
 
 const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
 
 export default function InitiativeListTable({
-  setNextItemActive,
   initiativeListItems,
   setInitiativeListItems,
-  activeId,
+  activeInitiativeListItemPosition,
+  setActiveInitiativeListItemPosition,
 }: InitiativeListTableProps) {
   const changeInitiativeListItemValue = (
     index: number,
@@ -71,12 +77,18 @@ export default function InitiativeListTable({
           >
             <InitiativeInputCell
               index={index}
-              active={initiativeListItem.id === activeId}
+              active={
+                initiativeListItem.id ===
+                activeInitiativeListItemPosition.activeId
+              }
               initiativeListItem={initiativeListItem}
               changeInitiativeListItemValue={changeInitiativeListItemValue}
             />
             <InputCell
-              active={initiativeListItem.id === activeId}
+              active={
+                initiativeListItem.id ===
+                activeInitiativeListItemPosition.activeId
+              }
               value={initiativeListItem.name ?? ""}
               onChange={(e) =>
                 changeInitiativeListItemValue(index, {
@@ -85,7 +97,10 @@ export default function InitiativeListTable({
               }
             />
             <InputCell
-              active={initiativeListItem.id === activeId}
+              active={
+                initiativeListItem.id ===
+                activeInitiativeListItemPosition.activeId
+              }
               value={initiativeListItem.hp ?? ""}
               onChange={(e) =>
                 changeInitiativeListItemValue(index, {
@@ -94,7 +109,10 @@ export default function InitiativeListTable({
               }
             />
             <InputCell
-              active={initiativeListItem.id === activeId}
+              active={
+                initiativeListItem.id ===
+                activeInitiativeListItemPosition.activeId
+              }
               value={initiativeListItem.ac ?? ""}
               onChange={(e) =>
                 changeInitiativeListItemValue(index, {
@@ -114,7 +132,16 @@ export default function InitiativeListTable({
                   newState.splice(index, 1);
                   return newState;
                 });
-                if (initiativeListItem.id === activeId) setNextItemActive();
+                if (
+                  initiativeListItem.id ===
+                  activeInitiativeListItemPosition.activeId
+                )
+                  setActiveInitiativeListItemPosition((prevState) =>
+                    findNextActiveInitiativeListItemPosition(
+                      initiativeListItems,
+                      prevState,
+                    ),
+                  );
               }}
             />
           </DraggableRow>
