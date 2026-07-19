@@ -8,7 +8,7 @@ public sealed class InitiativeListFaker : Faker<InitiativeList>
     public InitiativeListFaker(int accountId)
     {
         RuleFor(o => o.AccountId, f => accountId);
-        RuleFor(o => o.Name, f => f.Hacker.Phrase());
+        RuleFor(o => o.Name, f => f.Lorem.Sentence(3));
         RuleFor(o => o.Round, f => f.Random.Int(1, 20));
     }
 }
