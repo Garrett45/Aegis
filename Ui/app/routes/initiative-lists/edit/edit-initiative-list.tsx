@@ -1,20 +1,14 @@
-import { useState } from "react";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import React, { useState } from "react";
 import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import {
   type InitiativeListDto,
   type InitiativeListItemDto,
   useInitiativeList,
-  useUpdateInitiativeList,
 } from "~/shared/api/initiative-lists";
 import { appWidth } from "~/shared/components/layout/styles";
 import InitiativeListFooter from "~/routes/initiative-lists/edit/initiative-list-footer";
 import InitiativeListTable from "~/routes/initiative-lists/edit/initiative-list-table/initiative-list-table";
-import SortButton from "~/routes/initiative-lists/edit/sort-button";
-import RollAllEmptyButton from "~/routes/initiative-lists/edit/roll-all-empty-button";
+import InitiativeListTableActionRow from "~/routes/initiative-lists/edit/initiative-list-table-action-row";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -54,7 +48,6 @@ const InternalInitiativeList = ({
     round: initiativeList.round,
   });
   const [name, setName] = useState(initiativeList.name);
-  const { mutate: save, isPending: isSavePending } = useUpdateInitiativeList();
 
   return (
     <>
@@ -64,33 +57,13 @@ const InternalInitiativeList = ({
             Encounter:{" "}
             <input value={name} onChange={(e) => setName(e.target.value)} />
           </h1>
-          <div className={"mb-2 flex items-center"}>
-            <h1 className={"text-2xl"}>
-              Round {activeInitiativeListItemPosition.round}
-            </h1>
-            <div className={"flex items-center ml-auto gap-2"}>
-              <RollAllEmptyButton
-                setInitiativeListItems={setInitiativeListItems}
-              />
-              <SortButton setInitiativeListItems={setInitiativeListItems} />
-              <button
-                className={`${buttonSharedStyles} ${normalButtonColor}`}
-                onClick={() =>
-                  save({
-                    id: initiativeList.id,
-                    accountId: initiativeList.accountId,
-                    name,
-                    round: activeInitiativeListItemPosition.round,
-                    activeId: activeInitiativeListItemPosition.activeId,
-                    initiativeListItems: initiativeListItems,
-                  })
-                }
-                disabled={isSavePending}
-              >
-                Save
-              </button>
-            </div>
-          </div>
+          <InitiativeListTableActionRow
+            initiativeList={initiativeList}
+            initiativeListItems={initiativeListItems}
+            setInitiativeListItems={setInitiativeListItems}
+            activeInitiativeListItemPosition={activeInitiativeListItemPosition}
+            name={name}
+          />
           <InitiativeListTable
             initiativeListItems={initiativeListItems}
             setInitiativeListItems={setInitiativeListItems}

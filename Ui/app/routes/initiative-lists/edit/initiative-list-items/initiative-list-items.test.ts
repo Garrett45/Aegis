@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   findNextActiveInitiativeListItemPosition,
   findPrevActiveInitiativeListItemPosition,
-  sortInitiativeListItems
+  sortInitiativeListItems,
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 
 const testInitiativeListItems: InitiativeListItemDto[] = [

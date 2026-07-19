@@ -1,10 +1,7 @@
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
 import { roll } from "~/shared/services/random";
 import React, { type SetStateAction } from "react";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
+import MainButton from "~/shared/components/button/main-button";
 
 interface RollAllEmptyButtonProps {
   setInitiativeListItems: React.Dispatch<
@@ -27,12 +24,5 @@ export default function RollAllEmptyButton({
     );
   };
 
-  return (
-    <button
-      className={`${buttonSharedStyles} ${normalButtonColor}`}
-      onClick={rollAllEmpty}
-    >
-      Roll All Empty
-    </button>
-  );
+  return <MainButton onClick={rollAllEmpty}>Roll All Empty</MainButton>;
 }

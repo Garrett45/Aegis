@@ -1,7 +1,4 @@
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import { buttonSharedStyles } from "~/shared/components/button/styles";
 import { FaPlus } from "react-icons/fa";
 import { v4 as uuidv4 } from "uuid";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
@@ -11,6 +8,7 @@ import {
   findPrevActiveInitiativeListItemPosition,
   type InitiativeListItems,
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
+import MainButton from "~/shared/components/button/main-button";
 
 interface InitiativeListFooterProps {
   initiativeListItems: InitiativeListItemDto[];
@@ -46,7 +44,7 @@ export default function InitiativeListFooter({
       <div
         className={"max-w-300 mx-auto flex items-stretch justify-center gap-6"}
       >
-        <button
+        <MainButton
           onClick={() =>
             setActiveInitiativeListItemPosition((prevState) =>
               findPrevActiveInitiativeListItemPosition(
@@ -55,10 +53,9 @@ export default function InitiativeListFooter({
               ),
             )
           }
-          className={`${buttonSharedStyles} ${normalButtonColor}`}
         >
           Prev
-        </button>
+        </MainButton>
         <button
           onClick={() =>
             setInitiativeListItems((prevState) => [
@@ -70,7 +67,7 @@ export default function InitiativeListFooter({
         >
           <FaPlus />
         </button>
-        <button
+        <MainButton
           onClick={() =>
             setActiveInitiativeListItemPosition((prevState) =>
               findNextActiveInitiativeListItemPosition(
@@ -79,10 +76,9 @@ export default function InitiativeListFooter({
               ),
             )
           }
-          className={`${buttonSharedStyles} ${normalButtonColor}`}
         >
           Next
-        </button>
+        </MainButton>
       </div>
     </footer>
   );
