@@ -1,10 +1,13 @@
 ﻿using Api.InitiativeLists.Shared;
+using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
 
 namespace Api.InitiativeLists.CreateInitiativeList;
 
-public class CreateInitiativeListCommand(AegisContext context, InitiativeListMapper initiativeListMapper)
+public class CreateInitiativeListCommand(
+    AegisContext context,
+    IMapper<InitiativeList, InitiativeListBasicResponse> initiativeListMapper)
 {
     public async Task<InitiativeListBasicResponse> Execute(CreateInitiativeListRequest initiativeListRequest,
         Account currentAccount)
@@ -18,6 +21,6 @@ public class CreateInitiativeListCommand(AegisContext context, InitiativeListMap
         context.InitiativeLists.Add(initiativeList);
         await context.SaveChangesAsync();
 
-        return await initiativeListMapper.MapInitiativeListToBasicResponse(initiativeList);
+        return await initiativeListMapper.Map(initiativeList);
     }
 }

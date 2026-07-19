@@ -1,10 +1,14 @@
-﻿using Api.InitiativeLists.Shared;
+﻿using Api.InitiativeLists.Dto;
+using Api.InitiativeLists.Shared;
+using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
 
 namespace Api.InitiativeLists;
 
-public class UpdateInitiativeListCommand(AegisContext context, InitiativeListMapper initiativeListMapper)
+public class UpdateInitiativeListCommand(
+    AegisContext context,
+    IMapper<InitiativeList, InitiativeListDto> initiativeListMapper)
 {
     public async Task<InitiativeListDto> Execute(InitiativeListDto initiativeListDto, Account currentAccount)
     {
@@ -44,6 +48,6 @@ public class UpdateInitiativeListCommand(AegisContext context, InitiativeListMap
             });
 
         await context.SaveChangesAsync();
-        return await initiativeListMapper.MapInitiativeListToDto(initiativeList);
+        return await initiativeListMapper.Map(initiativeList);
     }
 }

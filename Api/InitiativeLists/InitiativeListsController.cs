@@ -1,4 +1,5 @@
 using Api.InitiativeLists.CreateInitiativeList;
+using Api.InitiativeLists.Dto;
 using Api.InitiativeLists.DuplicateInitiativeList;
 using Api.InitiativeLists.Shared;
 using Api.Shared;
@@ -14,7 +15,7 @@ namespace Api.InitiativeLists;
 public class InitiativeListsController(
     AegisContext context,
     GetOrCreateAccount getOrCreateAccount,
-    InitiativeListMapper initiativeListMapper,
+    IMapper<InitiativeList, InitiativeListDto> initiativeListDtoMapper,
     CreateInitiativeListCommand createInitiativeListCommand,
     DuplicateInitiativeListCommand duplicateInitiativeListCommand,
     UpdateInitiativeListCommand updateInitiativeListCommand) : ControllerBase
@@ -46,7 +47,7 @@ public class InitiativeListsController(
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        return Ok(await initiativeListMapper.MapInitiativeListToDto(initiativeList));
+        return Ok(await initiativeListDtoMapper.Map(initiativeList));
     }
 
     [HttpPost]
