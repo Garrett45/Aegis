@@ -5,9 +5,12 @@ namespace Api.InitiativeLists.DuplicateInitiativeList;
 
 public class DuplicateInitiativeListCommand(AegisContext context)
 {
-    public async Task<InitiativeListBasicResponse> Execute(InitiativeList initiativeList,
+    public async Task<InitiativeListBasicResponse> Execute(int id,
         DuplicateInitiativeListRequest request, Account currentAccount)
     {
+        var initiativeList = await context.InitiativeLists.FindAsync(id);
+        if (initiativeList is null) throw new InvalidOperationException("Could not find initiative list");
+
         var newInitiativeList = new InitiativeList
         {
             AccountId = currentAccount.Id,

@@ -79,7 +79,7 @@ public class InitiativeListsController(
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        var duplicatedInitiativeList = duplicateInitiativeListCommand.Execute(initiativeList, request, currentAccount);
+        var duplicatedInitiativeList = duplicateInitiativeListCommand.Execute(id, request, currentAccount);
         return CreatedAtAction("GetInitiativeList", new { id = duplicatedInitiativeList.Id }, duplicatedInitiativeList);
     }
 
@@ -94,7 +94,7 @@ public class InitiativeListsController(
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        return Ok(await updateInitiativeListCommand.Execute(initiativeList, initiativeListDto, currentAccount));
+        return Ok(await updateInitiativeListCommand.Execute(initiativeListDto, currentAccount));
     }
 
     [HttpDelete("{id}")]

@@ -5,9 +5,14 @@ namespace Api.InitiativeLists;
 
 public class UpdateInitiativeListCommand(AegisContext context, InitiativeListMapper initiativeListMapper)
 {
-    public async Task<InitiativeListDto> Execute(InitiativeList initiativeList, InitiativeListDto initiativeListDto,
-        Account currentAccount)
+    public async Task<InitiativeListDto> Execute(InitiativeListDto initiativeListDto, Account currentAccount)
     {
+        // Since EF core caches it, we can just pull the initiative list again, and this saves us from a weird parameter list
+        // The account on the other hand, is best just provided by the controller, which already has the info
+        var initiativeList = await context.InitiativeLists.FindAsync(initiativeListDto.Id);
+        if (initiativeList is null)
+            throw new InvalidOperationException($"Could not find initiative list {initiativeListDto.Id}");
+
         initiativeList.AccountId = currentAccount.Id;
         initiativeList.Name = initiativeListDto.Name;
         initiativeList.Round = initiativeListDto.Round;
