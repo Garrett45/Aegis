@@ -1,13 +1,14 @@
-import type {
-  Route
-} from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
+import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   allInitiativeListsQueryKey,
   type CreateInitiativeListRequest,
-  type InitiativeListBasicResponse
+  type InitiativeListBasicResponse,
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";

@@ -5,17 +5,11 @@ import DeleteCell from "~/shared/components/table/cells/delete-cell";
 import Table from "~/shared/components/table/table";
 import Cell from "~/shared/components/table/cells/cell";
 import LinkCell from "~/shared/components/table/cells/link-cell";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 import { Link } from "react-router";
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
-import {
-  useAllInitiativeLists,
-  useDeleteInitiativeList,
-} from "~/shared/api/initiative-lists";
+import { useAllInitiativeLists, useDeleteInitiativeList } from "~/shared/api/initiative-lists";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -38,7 +32,7 @@ export default function HomeRoute() {
       <div className={`${appWidth} mx-auto`}>
         {auth.isAuthenticated ? (
           <>
-            <div className={"mt-4 mb-2 flex items-center"}>
+            <div className={"mt-4 mb-2 flex items-center flex-wrap"}>
               <h1 className={"text-2xl"}>Initiative Lists</h1>
               <div className={"flex items-center ml-auto gap-2"}>
                 <Link
