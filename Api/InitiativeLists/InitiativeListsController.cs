@@ -1,3 +1,4 @@
+using Api.InitiativeLists.DuplicateInitiativeList;
 using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
@@ -8,7 +9,10 @@ namespace Api.InitiativeLists;
 
 [Route("api/[controller]")]
 [ApiController]
-public class InitiativeListsController(AegisContext context, GetOrCreateAccount getOrCreateAccount) : ControllerBase
+public class InitiativeListsController(
+    AegisContext context,
+    GetOrCreateAccount getOrCreateAccount,
+    DuplicateInitiativeListCommand duplicateInitiativeListCommand) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<InitiativeListBasicResponse>>> GetInitiativeList()
@@ -99,38 +103,8 @@ public class InitiativeListsController(AegisContext context, GetOrCreateAccount 
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        var newInitiativeList = new InitiativeList
-        {
-            AccountId = currentAccount.Id,
-            Name = request.Name,
-            Round = initiativeList.Round
-        };
-        await context.InitiativeLists.AddAsync(newInitiativeList);
-        await context.SaveChangesAsync();
-
-        var initiativeListItems = context.InitiativeListItems
-            .Where(initiativeListItem => initiativeListItem.InitiativeListId == id)
-            .ToList();
-        foreach (var initiativeListItem in initiativeListItems)
-            await context.InitiativeListItems.AddAsync(new InitiativeListItem
-            {
-                InitiativeListId = newInitiativeList.Id,
-                Initiative = initiativeListItem.Initiative,
-                InitiativeBonus = initiativeListItem.InitiativeBonus,
-                Name = initiativeListItem.Name,
-                Hp = initiativeListItem.Hp,
-                Ac = initiativeListItem.Ac,
-                IsActive = initiativeListItem.IsActive,
-                SortOrder = initiativeListItem.SortOrder
-            });
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction("GetInitiativeList", new { id = newInitiativeList.Id }, new InitiativeListBasicResponse(
-            newInitiativeList.Id,
-            newInitiativeList.AccountId,
-            newInitiativeList.Name,
-            newInitiativeList.Round
-        ));
+        var duplicatedInitiativeList = duplicateInitiativeListCommand.Execute(initiativeList, request, currentAccount);
+        return CreatedAtAction("GetInitiativeList", new { id = duplicatedInitiativeList.Id }, duplicatedInitiativeList);
     }
 
     [HttpPut("{id}")]

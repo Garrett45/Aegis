@@ -1,3 +1,4 @@
+using Api.InitiativeLists;
 using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -56,6 +57,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<GetOrCreateAccount>();
+builder.Services.AddInitiativeListServices();
 
 var app = builder.Build();
 
