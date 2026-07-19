@@ -49,7 +49,7 @@ export function useAllInitiativeLists() {
     queryKey: allInitiativeListsQueryKey(auth),
     queryFn: async () => {
       const initiativeListResponse = await fetch(
-        `http://localhost:8080/api/InitiativeLists`,
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists`,
         {
           headers: {
             Authorization: `Bearer ${auth.user?.access_token}`,
@@ -69,7 +69,7 @@ export function useInitiativeList(initiativeListId: string) {
     queryKey: ["initiativeList", initiativeListId],
     queryFn: async () => {
       const initiativeListResponse = await fetch(
-        `http://localhost:8080/api/InitiativeLists/${initiativeListId}`,
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists/${initiativeListId}`,
         {
           headers: {
             Authorization: `Bearer ${auth.user?.access_token}`,
@@ -89,7 +89,7 @@ export function useUpdateInitiativeList() {
   return useMutation({
     mutationFn: async (initiativeList: InitiativeListDto) => {
       await fetch(
-        `http://localhost:8080/api/InitiativeLists/${initiativeList.id}`,
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists/${initiativeList.id}`,
         {
           method: "PUT",
           headers: {
@@ -122,7 +122,7 @@ export function useDuplicateInitiativeList(
   return useMutation({
     mutationFn: async (request: DuplicateInitiativeListRequest) => {
       const initiativeListResponse = await fetch(
-        `http://localhost:8080/api/InitiativeLists/${request.id}/duplicate`,
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists/${request.id}/duplicate`,
         {
           method: "POST",
           headers: {
@@ -150,12 +150,15 @@ export function useDeleteInitiativeList() {
 
   return useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`http://localhost:8080/api/InitiativeLists/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${auth.user?.access_token}`,
+      await fetch(
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+          },
         },
-      });
+      );
     },
     onSuccess: async () => {
       // Invalidate and refetch

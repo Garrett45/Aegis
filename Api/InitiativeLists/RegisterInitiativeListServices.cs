@@ -11,6 +11,7 @@ public static class RegisterInitiativeListServices
         services.AddScoped<InitiativeListMapper>();
         services.AddScoped<CreateInitiativeListCommand>();
         services.AddScoped<DuplicateInitiativeListCommand>();
+        services.AddScoped<UpdateInitiativeListCommand>();
 
         return services;
     }

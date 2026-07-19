@@ -1,14 +1,13 @@
-import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import type {
+  Route
+} from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   allInitiativeListsQueryKey,
   type CreateInitiativeListRequest,
-  type InitiativeListBasicResponse,
+  type InitiativeListBasicResponse
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
@@ -36,7 +35,7 @@ export default function AddInitiativeListRoute() {
   const { mutate: addInitiativeList } = useMutation({
     mutationFn: async () => {
       const initiativeListResponse = await fetch(
-        `http://localhost:8080/api/InitiativeLists`,
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists`,
         {
           method: "POST",
           headers: {
