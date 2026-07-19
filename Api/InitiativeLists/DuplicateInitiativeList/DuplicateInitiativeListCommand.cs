@@ -41,6 +41,6 @@ public class DuplicateInitiativeListCommand(
             });
         await context.SaveChangesAsync();
 
-        return await initiativeListMapper.Map(initiativeList);
+        return await initiativeListMapper.Map(newInitiativeList);
     }
 }

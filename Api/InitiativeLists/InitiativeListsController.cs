@@ -69,7 +69,7 @@ public class InitiativeListsController(
         var currentAccount = await getOrCreateAccount.Execute(User);
         if (initiativeList.AccountId != currentAccount.Id) return Forbid();
 
-        var duplicatedInitiativeList = duplicateInitiativeListCommand.Execute(id, request, currentAccount);
+        var duplicatedInitiativeList = await duplicateInitiativeListCommand.Execute(id, request, currentAccount);
         return CreatedAtAction("GetInitiativeList", new { id = duplicatedInitiativeList.Id }, duplicatedInitiativeList);
     }
 

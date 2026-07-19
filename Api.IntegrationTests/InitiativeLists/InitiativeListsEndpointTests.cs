@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Api.InitiativeLists;
 using Api.InitiativeLists.CreateInitiativeList;
 using Api.InitiativeLists.Dto;
 using Api.InitiativeLists.DuplicateInitiativeList;
@@ -8,6 +7,7 @@ using Api.InitiativeLists.Shared;
 using Api.IntegrationTests.Shared.Faker;
 using Api.IntegrationTests.Shared.TestWebApplication;
 using Api.Shared;
+using Api.Shared.EntityFrameworkCore.Models;
 using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -119,6 +119,12 @@ public class InitiativeListsEndpointTests
         await context.InitiativeLists.AddAsync(initiativeList);
         await context.SaveChangesAsync();
 
+        var initiativeListItems = new List<InitiativeListItem>();
+        var initiativeListItemFaker = new InitiativeListItemFaker(initiativeList.Id);
+        for (var i = 0; i < 3; i++) initiativeListItems.Add(initiativeListItemFaker.Generate());
+        await context.InitiativeListItems.AddRangeAsync(initiativeListItems);
+        await context.SaveChangesAsync();
+
         var client = ApiSetUpFixture.Factory.WithBasicTestUserAuthenticated().CreateClient();
         var faker = new Faker();
         var duplicateInitiativeListRequest = new DuplicateInitiativeListRequest(faker.Hacker.Phrase());
@@ -127,7 +133,11 @@ public class InitiativeListsEndpointTests
 
         var returnedInitiativeList =
             await response.Content.ReadFromJsonAsync<InitiativeListBasicResponse>();
-        var duplicateInitiativeListFromDb = await context.InitiativeLists.FindAsync(returnedInitiativeList?.Id);
+        var returnedInitiativeListId = returnedInitiativeList?.Id;
+        var duplicateInitiativeListFromDb = await context.InitiativeLists.FindAsync(returnedInitiativeListId);
+        var duplicateInitiativeListItemsFromDb = await context.InitiativeListItems
+            .Where(initiativeListItem => initiativeListItem.InitiativeListId == returnedInitiativeListId)
+            .ToListAsync();
 
         response.EnsureSuccessStatusCode();
         Assert.That(returnedInitiativeList, Is.Not.Null);
@@ -136,6 +146,21 @@ public class InitiativeListsEndpointTests
         Assert.That(duplicateInitiativeListFromDb.Id, Is.Not.EqualTo(initiativeList.Id));
         Assert.That(duplicateInitiativeListFromDb.Name, Is.EqualTo(duplicateInitiativeListRequest.Name));
         Assert.That(duplicateInitiativeListFromDb.Round, Is.EqualTo(initiativeList.Round));
+
+        Assert.That(duplicateInitiativeListItemsFromDb.Count, Is.EqualTo(initiativeListItems.Count));
+        for (var i = 0; i < initiativeListItems.Count; i++)
+        {
+            var duplicateInitiativeListItem = duplicateInitiativeListItemsFromDb[i];
+            var initiativeListItem = initiativeListItems[i];
+
+            Assert.That(duplicateInitiativeListItem.Initiative, Is.EqualTo(initiativeListItem.Initiative));
+            Assert.That(duplicateInitiativeListItem.InitiativeBonus, Is.EqualTo(initiativeListItem.InitiativeBonus));
+            Assert.That(duplicateInitiativeListItem.Name, Is.EqualTo(initiativeListItem.Name));
+            Assert.That(duplicateInitiativeListItem.Hp, Is.EqualTo(initiativeListItem.Hp));
+            Assert.That(duplicateInitiativeListItem.Ac, Is.EqualTo(initiativeListItem.Ac));
+            Assert.That(duplicateInitiativeListItem.IsActive, Is.EqualTo(initiativeListItem.IsActive));
+            Assert.That(duplicateInitiativeListItem.SortOrder, Is.EqualTo(initiativeListItem.SortOrder));
+        }
     }
 
     [Test]
@@ -151,6 +176,12 @@ public class InitiativeListsEndpointTests
         await context.InitiativeLists.AddAsync(initiativeList);
         await context.SaveChangesAsync();
 
+        var initiativeListItems = new List<InitiativeListItem>();
+        var initiativeListItemFaker = new InitiativeListItemFaker(initiativeList.Id);
+        for (var i = 0; i < 3; i++) initiativeListItems.Add(initiativeListItemFaker.Generate());
+        await context.InitiativeListItems.AddRangeAsync(initiativeListItems);
+        await context.SaveChangesAsync();
+
         var client = ApiSetUpFixture.Factory.WithBasicTestUserAuthenticated().CreateClient();
         var faker = new Faker();
         var initiativeListRequest = new InitiativeListDto(
@@ -161,14 +192,16 @@ public class InitiativeListsEndpointTests
             []
         );
         var response = await client.PutAsJsonAsync($"/api/InitiativeLists/{initiativeList.Id}", initiativeListRequest);
-
         await context.Entry(initiativeList).ReloadAsync();
+        var initiativeListItemsFromDb = context.InitiativeListItems
+            .Where(initiativeListItem => initiativeListItem.InitiativeListId == initiativeList.Id).ToList();
 
         response.EnsureSuccessStatusCode();
         Assert.That(initiativeList, Is.Not.Null);
-        Assert.That(initiativeListRequest.Id, Is.EqualTo(initiativeList.Id));
-        Assert.That(initiativeListRequest.Name, Is.EqualTo(initiativeList.Name));
-        Assert.That(initiativeListRequest.Round, Is.EqualTo(initiativeList.Round));
+        Assert.That(initiativeList.Id, Is.EqualTo(initiativeListRequest.Id));
+        Assert.That(initiativeList.Name, Is.EqualTo(initiativeListRequest.Name));
+        Assert.That(initiativeList.Round, Is.EqualTo(initiativeListRequest.Round));
+        Assert.That(initiativeListItemsFromDb.Count(), Is.EqualTo(0));
     }
 
     [Test]
