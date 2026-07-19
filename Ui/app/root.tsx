@@ -38,7 +38,7 @@ export const links: Route.LinksFunction = () => [
   },
   {
     rel: "manifest",
-    href: "/site.webmanifest",
+    href: "/manifest.json",
   },
 ];
 
