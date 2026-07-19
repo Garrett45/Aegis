@@ -1,4 +1,5 @@
-﻿using Api.InitiativeLists.DuplicateInitiativeList;
+﻿using Api.InitiativeLists.CreateInitiativeList;
+using Api.InitiativeLists.DuplicateInitiativeList;
 
 namespace Api.InitiativeLists;
 
@@ -7,6 +8,7 @@ public static class RegisterInitiativeListServices
     public static IServiceCollection AddInitiativeListServices(this IServiceCollection services)
     {
         services.AddScoped<InitiativeListMapper>();
+        services.AddScoped<CreateInitiativeListCommand>();
         services.AddScoped<DuplicateInitiativeListCommand>();
 
         return services;

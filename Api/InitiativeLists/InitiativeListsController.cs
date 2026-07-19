@@ -1,4 +1,6 @@
+using Api.InitiativeLists.CreateInitiativeList;
 using Api.InitiativeLists.DuplicateInitiativeList;
+using Api.InitiativeLists.Shared;
 using Api.Shared;
 using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
@@ -13,6 +15,7 @@ public class InitiativeListsController(
     AegisContext context,
     GetOrCreateAccount getOrCreateAccount,
     InitiativeListMapper initiativeListMapper,
+    CreateInitiativeListCommand createInitiativeListCommand,
     DuplicateInitiativeListCommand duplicateInitiativeListCommand,
     UpdateInitiativeListCommand updateInitiativeListCommand) : ControllerBase
 {
@@ -51,22 +54,8 @@ public class InitiativeListsController(
         CreateInitiativeListRequest initiativeListRequest)
     {
         var currentAccount = await getOrCreateAccount.Execute(User);
-
-        var initiativeList = new InitiativeList
-        {
-            AccountId = currentAccount.Id,
-            Name = initiativeListRequest.Name,
-            Round = 1
-        };
-        context.InitiativeLists.Add(initiativeList);
-        await context.SaveChangesAsync();
-
-        return CreatedAtAction("GetInitiativeList", new { id = initiativeList.Id }, new InitiativeListBasicResponse(
-            initiativeList.Id,
-            initiativeList.AccountId,
-            initiativeList.Name,
-            initiativeList.Round
-        ));
+        var initiativeList = await createInitiativeListCommand.Execute(initiativeListRequest, currentAccount);
+        return CreatedAtAction("GetInitiativeList", new { id = initiativeList.Id }, initiativeList);
     }
 
     [HttpPost("{id}/duplicate")]

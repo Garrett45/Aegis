@@ -1,7 +1,9 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Api.InitiativeLists;
+using Api.InitiativeLists.CreateInitiativeList;
 using Api.InitiativeLists.DuplicateInitiativeList;
+using Api.InitiativeLists.Shared;
 using Api.IntegrationTests.Shared.Faker;
 using Api.IntegrationTests.Shared.TestWebApplication;
 using Api.Shared;

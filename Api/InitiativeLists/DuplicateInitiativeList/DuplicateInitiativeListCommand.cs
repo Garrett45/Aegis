@@ -1,4 +1,5 @@
-﻿using Api.Shared.EntityFrameworkCore;
+﻿using Api.InitiativeLists.Shared;
+using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
 
 namespace Api.InitiativeLists.DuplicateInitiativeList;

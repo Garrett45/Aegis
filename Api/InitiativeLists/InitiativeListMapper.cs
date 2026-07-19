@@ -1,4 +1,5 @@
-﻿using Api.Shared.EntityFrameworkCore;
+﻿using Api.InitiativeLists.Shared;
+using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +31,16 @@ public class InitiativeListMapper(AegisContext context)
             initiativeList.Round,
             activeInitiativeItem?.Id.ToString() ?? "",
             initiativeListItems
+        );
+    }
+
+    public async Task<InitiativeListBasicResponse> MapInitiativeListToBasicResponse(InitiativeList initiativeList)
+    {
+        return new InitiativeListBasicResponse(
+            initiativeList.Id,
+            initiativeList.AccountId,
+            initiativeList.Name,
+            initiativeList.Round
         );
     }
 }
