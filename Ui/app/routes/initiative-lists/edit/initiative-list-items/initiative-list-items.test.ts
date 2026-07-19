@@ -5,7 +5,7 @@ import {
   findNextActiveInitiativeListItemPosition,
   findPrevActiveInitiativeListItemPosition,
   rollAllEmptyInitiativeListItems,
-  sortInitiativeListItems
+  sortInitiativeListItems,
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 
 const testInitiativeListItems: InitiativeListItemDto[] = [

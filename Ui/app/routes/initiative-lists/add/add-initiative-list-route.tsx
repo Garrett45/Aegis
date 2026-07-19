@@ -1,4 +1,4 @@
-import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list";
+import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
 import {
   buttonSharedStyles,
   normalButtonColor,
@@ -23,7 +23,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function AddInitiativeList() {
+export default function AddInitiativeListRoute() {
   const auth = useAuth();
 
   const navigate = useNavigate();

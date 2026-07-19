@@ -1,4 +1,4 @@
-import type { Route } from "../../../.react-router/types/app/routes/home/+types/home";
+import type { Route } from "../../../.react-router/types/app/routes/home/+types/home-route";
 import Row from "~/shared/components/table/rows/row";
 import HeadCell from "~/shared/components/table/cells/head-cell";
 import DeleteCell from "~/shared/components/table/cells/delete-cell";
@@ -19,7 +19,7 @@ import {
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Home" },
+    { title: "HomeRoute" },
     {
       name: "description",
       content: "This is the home page of all the DM tools under Athena",
@@ -27,7 +27,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export default function HomeRoute() {
   const auth = useAuth();
   const { data: initiativeLists } = useAllInitiativeLists();
   const { mutate: deleteInitiativeList } = useDeleteInitiativeList();

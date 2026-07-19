@@ -1,14 +1,15 @@
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   type DuplicateInitiativeListRequest,
   useAllInitiativeLists,
-  useDuplicateInitiativeList
+  useDuplicateInitiativeList,
 } from "~/shared/api/initiative-lists";
-import type {
-  Route
-} from "../../../../.react-router/types/app/routes/initiative-lists/duplicate/+types/duplicate-initiative-list";
+import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/duplicate/+types/duplicate-initiative-list-route";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -20,7 +21,7 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function DuplicateInitiativeList() {
+export default function DuplicateInitiativeListRoute() {
   const navigate = useNavigate();
   const [duplicateFormValues, setDuplicateFormValues] =
     useState<DuplicateInitiativeListRequest>({

@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
-import {
-  type InitiativeListDto,
-  type InitiativeListItemDto,
-  useInitiativeList,
-} from "~/shared/api/initiative-lists";
+import type {
+  Route
+} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list-route";
+import { type InitiativeListDto, type InitiativeListItemDto, useInitiativeList } from "~/shared/api/initiative-lists";
 import { appWidth } from "~/shared/components/layout/styles";
-import InitiativeListFooter from "~/routes/initiative-lists/edit/initiative-list-footer";
+import EditInitiativeListFooter from "~/routes/initiative-lists/edit/edit-initiative-list-footer";
 import InitiativeListTable from "~/routes/initiative-lists/edit/initiative-list-table/initiative-list-table";
-import InitiativeListTableActionRow from "~/routes/initiative-lists/edit/initiative-list-table-action-row";
+import InitiativeListTableActionRow
+  from "~/routes/initiative-lists/edit/initiative-list-table/initiative-list-table-action-row";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -20,7 +19,9 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function EditInitiativeList({ params }: Route.ComponentProps) {
+export default function EditInitiativeListRoute({
+  params,
+}: Route.ComponentProps) {
   const { data: initiativeList, isFetchedAfterMount } = useInitiativeList(
     params.initiativeListId,
   );
@@ -74,7 +75,7 @@ const InternalInitiativeList = ({
           />
         </div>
       </main>
-      <InitiativeListFooter
+      <EditInitiativeListFooter
         initiativeListItems={initiativeListItems}
         setInitiativeListItems={setInitiativeListItems}
         setActiveInitiativeListItemPosition={

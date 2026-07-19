@@ -20,7 +20,7 @@ interface InitiativeListFooterProps {
   >;
 }
 
-export default function InitiativeListFooter({
+export default function EditInitiativeListFooter({
   initiativeListItems,
   setInitiativeListItems,
   setActiveInitiativeListItemPosition,
