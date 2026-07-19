@@ -1,10 +1,7 @@
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
 import { Link } from "react-router";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 
 export default function Header() {
   const auth = useAuth();
