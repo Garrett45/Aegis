@@ -7,10 +7,10 @@ import { v4 as uuidv4 } from "uuid";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import React, { type SetStateAction } from "react";
 import {
-  type ActiveInitiativeListItemPosition,
   findNextActiveInitiativeListItemPosition,
   findPrevActiveInitiativeListItemPosition,
-} from "~/routes/initiative-lists/edit/active-initiative-list-item-position/active-initiative-list-item-position";
+  type InitiativeListItems,
+} from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 
 interface InitiativeListFooterProps {
   initiativeListItems: InitiativeListItemDto[];
@@ -18,7 +18,7 @@ interface InitiativeListFooterProps {
     SetStateAction<InitiativeListItemDto[]>
   >;
   setActiveInitiativeListItemPosition: React.Dispatch<
-    SetStateAction<ActiveInitiativeListItemPosition>
+    SetStateAction<InitiativeListItems>
   >;
 }
 
@@ -37,18 +37,6 @@ export default function InitiativeListFooter({
     sortOrder: initiativeListItems.length + 1,
   });
 
-  const setPrevItemActive = () => {
-    setActiveInitiativeListItemPosition((prevState) =>
-      findPrevActiveInitiativeListItemPosition(initiativeListItems, prevState),
-    );
-  };
-
-  const setNextItemActive = () => {
-    setActiveInitiativeListItemPosition((prevState) =>
-      findNextActiveInitiativeListItemPosition(initiativeListItems, prevState),
-    );
-  };
-
   return (
     <footer
       className={
@@ -59,7 +47,14 @@ export default function InitiativeListFooter({
         className={"max-w-300 mx-auto flex items-stretch justify-center gap-6"}
       >
         <button
-          onClick={setPrevItemActive}
+          onClick={() =>
+            setActiveInitiativeListItemPosition((prevState) =>
+              findPrevActiveInitiativeListItemPosition(
+                initiativeListItems,
+                prevState,
+              ),
+            )
+          }
           className={`${buttonSharedStyles} ${normalButtonColor}`}
         >
           Prev
@@ -76,7 +71,14 @@ export default function InitiativeListFooter({
           <FaPlus />
         </button>
         <button
-          onClick={setNextItemActive}
+          onClick={() =>
+            setActiveInitiativeListItemPosition((prevState) =>
+              findNextActiveInitiativeListItemPosition(
+                initiativeListItems,
+                prevState,
+              ),
+            )
+          }
           className={`${buttonSharedStyles} ${normalButtonColor}`}
         >
           Next

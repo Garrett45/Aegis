@@ -1,13 +1,13 @@
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 
-export interface ActiveInitiativeListItemPosition {
+export interface InitiativeListItems {
   activeId: string;
   round: number;
 }
 
 export const findPrevActiveInitiativeListItemPosition = (
   initiativeListItems: InitiativeListItemDto[],
-  activeInitiativeListItemPosition: ActiveInitiativeListItemPosition,
+  activeInitiativeListItemPosition: InitiativeListItems,
 ) => {
   const activeIndex = initiativeListItems.findIndex(
     (initiativeListItem) =>
@@ -45,7 +45,7 @@ export const findPrevActiveInitiativeListItemPosition = (
 
 export const findNextActiveInitiativeListItemPosition = (
   initiativeListItems: InitiativeListItemDto[],
-  activeInitiativeListItemPosition: ActiveInitiativeListItemPosition,
+  activeInitiativeListItemPosition: InitiativeListItems,
 ) => {
   const activeIndex = initiativeListItems.findIndex(
     (initiativeListItem) =>
@@ -73,4 +73,27 @@ export const findNextActiveInitiativeListItemPosition = (
     ...activeInitiativeListItemPosition,
     activeId: activeItem.id,
   };
+};
+
+export const sortInitiativeListItems = (
+  initiativeListItems: InitiativeListItemDto[],
+) => {
+  const newInitiativeListItems = [...initiativeListItems];
+  newInitiativeListItems.sort((a, b) => {
+    const initiativeSortValue = (b.initiative ?? 0) - (a.initiative ?? 0);
+    if (initiativeSortValue !== 0) return initiativeSortValue;
+
+    const initiativeBonusSortValue =
+      (b.initiativeBonus ?? 0) - (a.initiativeBonus ?? 0);
+    if (initiativeBonusSortValue !== 0) return initiativeBonusSortValue;
+
+    const nameSortValue = (a.name ?? "").localeCompare(b.name ?? "");
+    if (nameSortValue !== 0) return nameSortValue;
+
+    return a.id.localeCompare(b.id);
+  });
+  return newInitiativeListItems.map((initiativeListItem, index) => ({
+    ...initiativeListItem,
+    sortOrder: index + 1,
+  }));
 };

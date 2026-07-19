@@ -12,18 +12,18 @@ import { parseNumberValue } from "~/shared/services/parsers";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import React, { type SetStateAction } from "react";
 import {
-  type ActiveInitiativeListItemPosition,
   findNextActiveInitiativeListItemPosition,
-} from "~/routes/initiative-lists/edit/active-initiative-list-item-position/active-initiative-list-item-position";
+  type InitiativeListItems,
+} from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 
 interface InitiativeListTableProps {
   initiativeListItems: InitiativeListItemDto[];
   setInitiativeListItems: React.Dispatch<
     SetStateAction<InitiativeListItemDto[]>
   >;
-  activeInitiativeListItemPosition: ActiveInitiativeListItemPosition;
+  activeInitiativeListItemPosition: InitiativeListItems;
   setActiveInitiativeListItemPosition: React.Dispatch<
-    SetStateAction<ActiveInitiativeListItemPosition>
+    SetStateAction<InitiativeListItems>
   >;
 }
 
