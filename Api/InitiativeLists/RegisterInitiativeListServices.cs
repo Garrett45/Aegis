@@ -1,5 +1,6 @@
 ﻿using Api.InitiativeLists.CreateInitiativeList;
 using Api.InitiativeLists.DuplicateInitiativeList;
+using Api.InitiativeLists.Shared;
 
 namespace Api.InitiativeLists;
 

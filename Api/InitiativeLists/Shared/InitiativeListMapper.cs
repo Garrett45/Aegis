@@ -1,9 +1,8 @@
-﻿using Api.InitiativeLists.Shared;
-using Api.Shared.EntityFrameworkCore;
+﻿using Api.Shared.EntityFrameworkCore;
 using Api.Shared.EntityFrameworkCore.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.InitiativeLists;
+namespace Api.InitiativeLists.Shared;
 
 public class InitiativeListMapper(AegisContext context)
 {

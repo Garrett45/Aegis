@@ -1,4 +1,4 @@
-﻿namespace Api.InitiativeLists;
+﻿namespace Api.InitiativeLists.Shared;
 
 public record InitiativeListItemDto(
     string Id,
