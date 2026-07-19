@@ -1,13 +1,4 @@
-import { move } from "@dnd-kit/helpers";
-import { DragDropProvider } from "@dnd-kit/react";
 import { useState } from "react";
-import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-input-cell";
-import DeleteCell from "~/shared/components/table/cells/delete-cell";
-import HeadCell from "~/shared/components/table/cells/head-cell";
-import InputCell from "~/shared/components/table/cells/input-cell";
-import DraggableRow from "~/shared/components/table/rows/draggable-row";
-import Row from "~/shared/components/table/rows/row";
-import Table from "~/shared/components/table/table";
 import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 import type {
   Route
@@ -18,11 +9,9 @@ import {
   useInitiativeList,
   useUpdateInitiativeList
 } from "~/shared/api/initiative-lists";
-import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
-import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
-import { toast } from "react-toastify";
 import InitiativeListFooter from "~/routes/initiative-lists/edit/initiative-list-footer";
+import InitiativeListTable from "~/routes/initiative-lists/edit/initiative-list-table";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -33,8 +22,6 @@ export function meta({}: Route.MetaArgs) {
     },
   ];
 }
-
-const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
 
 export default function EditInitiativeList({ params }: Route.ComponentProps) {
   const { data: initiativeList, isFetchedAfterMount } = useInitiativeList(
@@ -53,7 +40,6 @@ interface InternalInitiativeListProps {
 const InternalInitiativeList = ({
   initiativeList,
 }: InternalInitiativeListProps) => {
-  const auth = useAuth();
   const [initiativeListItems, setInitiativeListItems] = useState<
     InitiativeListItemDto[]
   >(initiativeList.initiativeListItems);
@@ -91,19 +77,6 @@ const InternalInitiativeList = ({
   };
 
   const roll = () => Math.floor(Math.random() * 20) + 1;
-
-  const changeInitiativeListItemValue = (
-    index: number,
-    value: Partial<InitiativeListItemDto>,
-  ) =>
-    setInitiativeListItems((prevState) => {
-      const newState = [...prevState];
-      newState.splice(index, 1, {
-        ...prevState[index],
-        ...value,
-      });
-      return newState;
-    });
 
   const activeIndex = initiativeListItems.findIndex(
     (initiativeListItem) => initiativeListItem.id === activeId,
@@ -191,95 +164,13 @@ const InternalInitiativeList = ({
               </button>
             </div>
           </div>
-
-          <Table gridColStyle={tableGridColStyle}>
-            <Row>
-              <HeadCell />
-              <HeadCell>Initiative</HeadCell>
-              <HeadCell>Name</HeadCell>
-              <HeadCell>HP</HeadCell>
-              <HeadCell>AC</HeadCell>
-              <HeadCell />
-            </Row>
-            <DragDropProvider
-              onDragEnd={(event) => {
-                setInitiativeListItems((prevState) =>
-                  move(prevState, event).map((initiativeListItem, index) => ({
-                    ...initiativeListItem,
-                    sortOrder: index + 1,
-                  })),
-                );
-              }}
-            >
-              {initiativeListItems.map((initiativeListItem, index) => (
-                <DraggableRow
-                  gridColStyle={tableGridColStyle}
-                  index={index}
-                  id={initiativeListItem.id}
-                  key={initiativeListItem.id}
-                >
-                  <InitiativeInputCell
-                    index={index}
-                    active={initiativeListItem.id === activeId}
-                    initiativeListItem={initiativeListItem}
-                    changeInitiativeListItemValue={
-                      changeInitiativeListItemValue
-                    }
-                    roll={roll}
-                  />
-                  <InputCell
-                    active={initiativeListItem.id === activeId}
-                    value={initiativeListItem.name ?? ""}
-                    onChange={(e) =>
-                      changeInitiativeListItemValue(index, {
-                        name: e.target.value == "" ? null : e.target.value,
-                      })
-                    }
-                  />
-                  <InputCell
-                    active={initiativeListItem.id === activeId}
-                    value={initiativeListItem.hp ?? ""}
-                    onChange={(e) =>
-                      changeInitiativeListItemValue(index, {
-                        hp: parseNumberValue(
-                          e.target.value,
-                          initiativeListItem.hp,
-                        ),
-                      })
-                    }
-                  />
-                  <InputCell
-                    active={initiativeListItem.id === activeId}
-                    value={initiativeListItem.ac ?? ""}
-                    onChange={(e) =>
-                      changeInitiativeListItemValue(index, {
-                        ac: parseNumberValue(
-                          e.target.value,
-                          initiativeListItem.ac,
-                        ),
-                      })
-                    }
-                  />
-                  <DeleteCell
-                    onClick={() => {
-                      if (initiativeListItems.length === 1) {
-                        toast.error("Can not remove last element in a list");
-                        return;
-                      }
-
-                      setInitiativeListItems((prevState) => {
-                        const newState = [...prevState];
-                        newState.splice(index, 1);
-                        return newState;
-                      });
-                      if (initiativeListItem.id === activeId)
-                        setNextItemActive();
-                    }}
-                  />
-                </DraggableRow>
-              ))}
-            </DragDropProvider>
-          </Table>
+          <InitiativeListTable
+            setNextItemActive={setNextItemActive}
+            initiativeListItems={initiativeListItems}
+            setInitiativeListItems={setInitiativeListItems}
+            activeId={activeId}
+            roll={roll}
+          />
         </div>
       </main>
       <InitiativeListFooter
