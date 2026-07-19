@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import InputCell from "~/shared/components/table/cells/input-cell";
 import { useFloating, useFocus, useInteractions } from "@floating-ui/react";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
-import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
+import { parseNumberValue } from "~/shared/services/parsers";
+import { roll } from "~/shared/services/random";
 
 interface InitiativeInputCell {
   active?: boolean;
@@ -14,7 +15,6 @@ interface InitiativeInputCell {
     index: number,
     value: Partial<InitiativeListItemDto>,
   ) => void;
-  roll: () => number;
 }
 
 export default function InitiativeInputCell(props: InitiativeInputCell) {
@@ -51,7 +51,7 @@ export default function InitiativeInputCell(props: InitiativeInputCell) {
         <FaDiceD20
           onClick={() =>
             props.changeInitiativeListItemValue(props.index, {
-              initiative: props.roll() + initiativeBonus,
+              initiative: roll() + initiativeBonus,
             })
           }
           className={`absolute right-2 top-1/2 -translate-y-1/2 text-xl cursor-pointer`}

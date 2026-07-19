@@ -8,7 +8,7 @@ import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-input
 import InputCell from "~/shared/components/table/cells/input-cell";
 import DeleteCell from "~/shared/components/table/cells/delete-cell";
 import { toast } from "react-toastify";
-import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
+import { parseNumberValue } from "~/shared/services/parsers";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import React, { type SetStateAction } from "react";
 
@@ -19,7 +19,6 @@ interface InitiativeListTableProps {
     SetStateAction<InitiativeListItemDto[]>
   >;
   activeId: string;
-  roll: () => number;
 }
 
 const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
@@ -29,7 +28,6 @@ export default function InitiativeListTable({
   initiativeListItems,
   setInitiativeListItems,
   activeId,
-  roll,
 }: InitiativeListTableProps) {
   const changeInitiativeListItemValue = (
     index: number,
@@ -76,7 +74,6 @@ export default function InitiativeListTable({
               active={initiativeListItem.id === activeId}
               initiativeListItem={initiativeListItem}
               changeInitiativeListItemValue={changeInitiativeListItemValue}
-              roll={roll}
             />
             <InputCell
               active={initiativeListItem.id === activeId}

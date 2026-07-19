@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
-import type {
-  Route
-} from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
+import {
+  buttonSharedStyles,
+  normalButtonColor,
+} from "~/shared/components/button/styles";
+import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/edit/+types/edit-initiative-list";
 import {
   type InitiativeListDto,
   type InitiativeListItemDto,
   useInitiativeList,
-  useUpdateInitiativeList
+  useUpdateInitiativeList,
 } from "~/shared/api/initiative-lists";
 import { appWidth } from "~/shared/components/layout/styles";
 import InitiativeListFooter from "~/routes/initiative-lists/edit/initiative-list-footer";
 import InitiativeListTable from "~/routes/initiative-lists/edit/initiative-list-table";
+import { roll } from "~/shared/services/random";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -75,8 +77,6 @@ const InternalInitiativeList = ({
       })),
     );
   };
-
-  const roll = () => Math.floor(Math.random() * 20) + 1;
 
   const activeIndex = initiativeListItems.findIndex(
     (initiativeListItem) => initiativeListItem.id === activeId,
