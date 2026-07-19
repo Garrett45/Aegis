@@ -23,6 +23,7 @@ import {
 import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
 import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
+import { toast } from "react-toastify";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -272,7 +273,10 @@ const InternalInitiativeList = ({
                   />
                   <DeleteCell
                     onClick={() => {
-                      if (initiativeListItems.length === 1) return;
+                      if (initiativeListItems.length === 1) {
+                        toast.error("Can not remove last element in a list");
+                        return;
+                      }
 
                       setInitiativeListItems((prevState) => {
                         const newState = [...prevState];
