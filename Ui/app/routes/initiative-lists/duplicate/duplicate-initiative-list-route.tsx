@@ -36,7 +36,7 @@ export default function DuplicateInitiativeListRoute() {
   );
 
   return (
-    <main>
+    <main className={"px-2"}>
       <div className={`max-w-100 border-2 border-[#ddd] mx-auto px-8 py-4`}>
         <h1 className={"text-2xl mt-4 mb-2"}>Duplicate Initiative List</h1>
         <form

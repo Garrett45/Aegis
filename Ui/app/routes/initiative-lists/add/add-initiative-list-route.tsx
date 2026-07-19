@@ -1,14 +1,13 @@
-import type { Route } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
-import {
-  buttonSharedStyles,
-  normalButtonColor,
-} from "~/shared/components/button/styles";
+import type {
+  Route
+} from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
+import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import {
   allInitiativeListsQueryKey,
   type CreateInitiativeListRequest,
-  type InitiativeListBasicResponse,
+  type InitiativeListBasicResponse
 } from "~/shared/api/initiative-lists";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "react-oidc-context";
@@ -58,7 +57,7 @@ export default function AddInitiativeListRoute() {
   });
 
   return (
-    <main>
+    <main className={"px-2"}>
       <div className={`max-w-100 border-2 border-[#ddd] mx-auto px-8 py-4`}>
         <h1 className={"text-2xl mt-4 mb-2"}>Add Initiative List</h1>
         <form

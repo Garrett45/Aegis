@@ -45,7 +45,7 @@ export default function Header() {
             </>
           )}
           {auth.isAuthenticated && (
-            <div>
+            <div className={"max-sm:hidden"}>
               <p>{auth.user?.profile.name}</p>
               <p>{auth.user?.profile.email}</p>
             </div>
