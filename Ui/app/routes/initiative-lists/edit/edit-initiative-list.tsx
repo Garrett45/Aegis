@@ -1,8 +1,6 @@
 import { move } from "@dnd-kit/helpers";
 import { DragDropProvider } from "@dnd-kit/react";
 import { useState } from "react";
-import { FaPlus } from "react-icons/fa";
-import { v4 as uuidv4 } from "uuid";
 import InitiativeInputCell from "~/routes/initiative-lists/edit/initiative-input-cell";
 import DeleteCell from "~/shared/components/table/cells/delete-cell";
 import HeadCell from "~/shared/components/table/cells/head-cell";
@@ -24,6 +22,7 @@ import { useAuth } from "react-oidc-context";
 import { appWidth } from "~/shared/components/layout/styles";
 import { parseNumberValue } from "~/routes/initiative-lists/edit/parsers";
 import { toast } from "react-toastify";
+import InitiativeListFooter from "~/routes/initiative-lists/edit/initiative-list-footer";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -61,16 +60,6 @@ const InternalInitiativeList = ({
   const [activeId, setActiveId] = useState(initiativeList.activeId);
   const [round, setRound] = useState(initiativeList.round);
   const [name, setName] = useState(initiativeList.name);
-
-  const createEmptyInitiativeListItem = () => ({
-    id: uuidv4(),
-    initiative: null,
-    initiativeBonus: null,
-    name: null,
-    hp: null,
-    ac: null,
-    sortOrder: initiativeListItems.length + 1,
-  });
 
   const { mutate: save, isPending: isSavePending } = useUpdateInitiativeList();
 
@@ -293,41 +282,12 @@ const InternalInitiativeList = ({
           </Table>
         </div>
       </main>
-      <footer
-        className={
-          "sticky bottom-0 left-0 right-0 bg-white border-t-2 border-[#ddd] py-8 mt-auto"
-        }
-      >
-        <div
-          className={
-            "max-w-300 mx-auto flex items-stretch justify-center gap-6"
-          }
-        >
-          <button
-            onClick={setPrevItemActive}
-            className={`${buttonSharedStyles} ${normalButtonColor}`}
-          >
-            Prev
-          </button>
-          <button
-            onClick={() =>
-              setInitiativeListItems((prevState) => [
-                ...prevState,
-                createEmptyInitiativeListItem(),
-              ])
-            }
-            className={`${buttonSharedStyles} bg-[#86E265] hover:bg-[#6BDB43]`}
-          >
-            <FaPlus />
-          </button>
-          <button
-            onClick={setNextItemActive}
-            className={`${buttonSharedStyles} ${normalButtonColor}`}
-          >
-            Next
-          </button>
-        </div>
-      </footer>
+      <InitiativeListFooter
+        setPrevItemActive={setPrevItemActive}
+        setNextItemActive={setNextItemActive}
+        initiativeListItems={initiativeListItems}
+        setInitiativeListItems={setInitiativeListItems}
+      />
     </>
   );
 };
