@@ -13,7 +13,7 @@ import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import React, { type SetStateAction } from "react";
 import {
   findNextActiveInitiativeListItemPosition,
-  type InitiativeListItems,
+  type InitiativeListItems
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 
 interface InitiativeListTableProps {
@@ -27,7 +27,7 @@ interface InitiativeListTableProps {
   >;
 }
 
-const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px]`;
+const tableGridColStyle = `grid-cols-[50px_1fr_3fr_1fr_1fr_50px] max-sm:grid-cols-[50px_1fr_2fr_1fr_1fr_50px]`;
 
 export default function InitiativeListTable({
   initiativeListItems,
@@ -49,7 +49,7 @@ export default function InitiativeListTable({
     });
 
   return (
-    <Table gridColStyle={tableGridColStyle}>
+    <Table gridColStyle={tableGridColStyle} minWidthStyle={"min-w-190"}>
       <Row>
         <HeadCell />
         <HeadCell>Initiative</HeadCell>

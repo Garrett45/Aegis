@@ -57,7 +57,11 @@ const InternalInitiativeList = ({
         <div className={`${appWidth} mx-auto`}>
           <h1 className={"text-2xl mt-4 mb-2"}>
             Encounter:{" "}
-            <input value={name} onChange={(e) => setName(e.target.value)} />
+            <input
+              className={"max-w-full"}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </h1>
           <InitiativeListTableActionRow
             initiativeList={initiativeList}

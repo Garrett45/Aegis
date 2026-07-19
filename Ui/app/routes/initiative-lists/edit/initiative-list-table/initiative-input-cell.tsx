@@ -83,7 +83,7 @@ export default function InitiativeInputCell(props: InitiativeInputCell) {
                 }
               />
             </div>
-            <p className={"text-xl"}>
+            <p className={"text-xl max-sm:text-lg"}>
               Bonus:{" "}
               {initiativeBonus > 0 ? `+${initiativeBonus}` : initiativeBonus}
             </p>

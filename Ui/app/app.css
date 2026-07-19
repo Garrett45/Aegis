@@ -6,6 +6,7 @@
     --color-main: #CD8987;
     --color-main-hover: #C3726F;
     --color-highlight: #7BA0A3;
+    --breakpoint-xs: 25rem;
 }
 
 /*html,*/

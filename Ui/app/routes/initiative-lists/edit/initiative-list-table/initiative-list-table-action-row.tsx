@@ -1,12 +1,12 @@
 import {
   type InitiativeListDto,
   type InitiativeListItemDto,
-  useUpdateInitiativeList
+  useUpdateInitiativeList,
 } from "~/shared/api/initiative-lists";
 import {
   type InitiativeListItems,
   rollAllEmptyInitiativeListItems,
-  sortInitiativeListItems
+  sortInitiativeListItems,
 } from "~/routes/initiative-lists/edit/initiative-list-items/initiative-list-items";
 import React, { type SetStateAction } from "react";
 import MainButton from "~/shared/components/button/main-button";
@@ -31,11 +31,19 @@ export default function InitiativeListTableActionRow({
   const { mutate: save, isPending: isSavePending } = useUpdateInitiativeList();
 
   return (
-    <div className={"mb-2 flex items-center"}>
+    <div
+      className={
+        "mb-2 flex items-center max-sm:flex-col max-sm:items-start max-xs:gap-2"
+      }
+    >
       <h1 className={"text-2xl"}>
         Round {activeInitiativeListItemPosition.round}
       </h1>
-      <div className={"flex items-center ml-auto gap-2"}>
+      <div
+        className={
+          "flex items-center ml-auto gap-2 flex-wrap max-xs:flex-col max-xs:items-start max-xs:ml-0"
+        }
+      >
         <MainButton
           onClick={() =>
             setInitiativeListItems((prevState) =>
