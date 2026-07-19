@@ -1,16 +1,9 @@
 import type {
   Route
 } from "../../../../.react-router/types/app/routes/initiative-lists/add/+types/add-initiative-list-route";
-import { buttonSharedStyles, normalButtonColor } from "~/shared/components/button/styles";
-import { useState } from "react";
-import { useNavigate } from "react-router";
-import {
-  allInitiativeListsQueryKey,
-  type CreateInitiativeListRequest,
-  type InitiativeListBasicResponse
-} from "~/shared/api/initiative-lists";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "react-oidc-context";
+import {buttonSharedStyles, normalButtonColor,} from "~/shared/components/button/styles";
+import {useState} from "react";
+import {type CreateInitiativeListRequest, useCreateInitiativeList,} from "~/shared/api/initiative-lists";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,38 +16,11 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function AddInitiativeListRoute() {
-  const auth = useAuth();
-
-  const navigate = useNavigate();
   const [addFormValues, setAddFormValues] =
     useState<CreateInitiativeListRequest>({
       name: "",
     });
-
-  const queryClient = useQueryClient();
-  const { mutate: addInitiativeList } = useMutation({
-    mutationFn: async () => {
-      const initiativeListResponse = await fetch(
-        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${auth.user?.access_token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(addFormValues),
-        },
-      );
-      return (await initiativeListResponse.json()) as InitiativeListBasicResponse;
-    },
-    onSuccess: async (data) => {
-      // Invalidate and refetch
-      await queryClient.invalidateQueries({
-        queryKey: allInitiativeListsQueryKey(auth),
-      });
-      navigate(`/initiative-lists/${data.id}`);
-    },
-  });
+  const { mutate: addInitiativeList } = useCreateInitiativeList();
 
   return (
     <main className={"px-2"}>
@@ -63,7 +29,7 @@ export default function AddInitiativeListRoute() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            addInitiativeList();
+            addInitiativeList(addFormValues);
           }}
         >
           <label className={"block text-xl"}>

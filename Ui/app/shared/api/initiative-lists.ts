@@ -1,6 +1,7 @@
 import { type AuthContextProps, useAuth } from "react-oidc-context";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router";
 
 export interface CreateInitiativeListRequest {
   name: string;
@@ -79,6 +80,36 @@ export function useInitiativeList(initiativeListId: string) {
       return (await initiativeListResponse.json()) as InitiativeListDto;
     },
     enabled: auth.isAuthenticated,
+  });
+}
+
+export function useCreateInitiativeList() {
+  const auth = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  return useMutation({
+    mutationFn: async (request: CreateInitiativeListRequest) => {
+      const initiativeListResponse = await fetch(
+        `${import.meta.env.VITE_AEGIS_API_BASE_URL}/api/InitiativeLists`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${auth.user?.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(request),
+        },
+      );
+      return (await initiativeListResponse.json()) as InitiativeListBasicResponse;
+    },
+    onSuccess: async (data) => {
+      // Invalidate and refetch
+      await queryClient.invalidateQueries({
+        queryKey: allInitiativeListsQueryKey(auth),
+      });
+      navigate(`/initiative-lists/${data.id}`);
+    },
   });
 }
 
