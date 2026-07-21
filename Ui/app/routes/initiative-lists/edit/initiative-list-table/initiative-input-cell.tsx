@@ -1,7 +1,7 @@
 import { FaDiceD20, FaMinus, FaPlus } from "react-icons/fa";
 import React, { useState } from "react";
 import InputCell from "~/shared/components/table/cells/input-cell";
-import { useFloating, useFocus, useInteractions } from "@floating-ui/react";
+import { FloatingPortal, useDismiss, useFloating, useFocus, useInteractions } from "@floating-ui/react";
 import type { InitiativeListItemDto } from "~/shared/api/initiative-lists";
 import { parseNumberValue } from "~/shared/services/parsers";
 import { roll } from "~/shared/services/random";
@@ -26,7 +26,11 @@ export default function InitiativeInputCell(props: InitiativeInputCell) {
     onOpenChange: setIsBonusOpen,
   });
   const focus = useFocus(context);
-  const { getReferenceProps, getFloatingProps } = useInteractions([focus]);
+  const dismiss = useDismiss(context);
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    focus,
+    dismiss,
+  ]);
 
   return (
     <>
@@ -57,37 +61,39 @@ export default function InitiativeInputCell(props: InitiativeInputCell) {
           className={`absolute right-2 top-1/2 -translate-y-1/2 text-xl cursor-pointer`}
         />
         {isBonusOpen && (
-          <div
-            ref={refs.setFloating}
-            style={floatingStyles}
-            className={
-              "z-1 bg-white px-2 py-4 border-1 border-[#ddd] flex items-center justify-center gap-2"
-            }
-            {...getFloatingProps()}
-          >
-            <div className={"flex flex-col items-center"}>
-              <FaPlus
-                className={"cursor-pointer"}
-                onClick={() =>
-                  props.changeInitiativeListItemValue(props.index, {
-                    initiativeBonus: initiativeBonus + 1,
-                  })
-                }
-              />
-              <FaMinus
-                className={"cursor-pointer"}
-                onClick={() =>
-                  props.changeInitiativeListItemValue(props.index, {
-                    initiativeBonus: initiativeBonus - 1,
-                  })
-                }
-              />
+          <FloatingPortal>
+            <div
+              ref={refs.setFloating}
+              style={floatingStyles}
+              className={
+                "z-1 bg-white px-2 py-4 border-1 border-[#ddd] flex items-center justify-center gap-2"
+              }
+              {...getFloatingProps()}
+            >
+              <div className={"flex flex-col items-center"}>
+                <FaPlus
+                  className={"cursor-pointer"}
+                  onClick={() =>
+                    props.changeInitiativeListItemValue(props.index, {
+                      initiativeBonus: initiativeBonus + 1,
+                    })
+                  }
+                />
+                <FaMinus
+                  className={"cursor-pointer"}
+                  onClick={() =>
+                    props.changeInitiativeListItemValue(props.index, {
+                      initiativeBonus: initiativeBonus - 1,
+                    })
+                  }
+                />
+              </div>
+              <p className={"text-xl max-sm:text-lg"}>
+                Bonus:{" "}
+                {initiativeBonus > 0 ? `+${initiativeBonus}` : initiativeBonus}
+              </p>
             </div>
-            <p className={"text-xl max-sm:text-lg"}>
-              Bonus:{" "}
-              {initiativeBonus > 0 ? `+${initiativeBonus}` : initiativeBonus}
-            </p>
-          </div>
+          </FloatingPortal>
         )}
       </div>
     </>
